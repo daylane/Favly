@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+  <Project Path="Favly.api/Favly.api.csproj" />
+  <Project Path="Favly.Application/Favly.Application.csproj" />
+  <Project Path="Favly.Domain/Favly.Domain.csproj" />
+  <Project Path="Favly.Infrastructure/Favly.Infrastructure.csproj" />
+</Solution>
