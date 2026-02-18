@@ -1,7 +1,7 @@
 using Favly.api.Extensions;
+using Favly.api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 
 builder.Services.ResolveDependencies(builder.Configuration);
@@ -9,6 +9,7 @@ builder.Services.ResolveDependencies(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
@@ -22,6 +23,8 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

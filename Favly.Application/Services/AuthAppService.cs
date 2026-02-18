@@ -2,7 +2,7 @@
 using Favly.Application.Interfaces;
 using Favly.Application.Mappers;
 using Favly.Domain.Entities;
-using Favly.Domain.Interfaces;
+using Favly.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

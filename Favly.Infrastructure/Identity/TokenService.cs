@@ -1,5 +1,5 @@
 ﻿using Favly.Domain.Entities;
-using Favly.Domain.Interfaces;
+using Favly.Domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

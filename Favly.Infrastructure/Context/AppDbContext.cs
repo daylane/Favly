@@ -9,10 +9,12 @@ using System.Text;
 
 namespace Favly.Infrastructure.Context
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+        public DbSet<Category> categories { get; set; }
+        public DbSet<EvaluationItem> evaluationItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

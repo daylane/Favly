@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
 
 namespace Favly.api.Extensions
@@ -46,7 +47,16 @@ namespace Favly.api.Extensions
                 };
             });
 
-            services.AddScoped<ITokenService, TokenService>();
+            var infrastructureAssembly = Assembly.GetAssembly(typeof(TokenService));
+
+            services.Scan(scan => scan
+                .FromAssemblies(infrastructureAssembly)
+                .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
+                .AsImplementedInterfaces() // Registra como IClassName
+                .WithScopedLifetime()      // Define o tempo de vida
+            );
+
+
             services.AddIdentityCore<ApplicationUser>(options => {
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
