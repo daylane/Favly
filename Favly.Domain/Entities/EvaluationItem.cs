@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Favly.Domain.Common.Base;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using static System.Net.WebRequestMethods;
 
 namespace Favly.Domain.Entities
 {
-    public class EvaluationItem : Base
+    public class EvaluationItem : Entity
     {
         public string ExternalId { get; set; }
 
