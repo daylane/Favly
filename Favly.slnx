@@ -1,9 +1,12 @@
 <Solution>
+  <Folder Name="/Tests/">
+    <Project Path="../Favly.Domain.Tests/Favly.Domain.Tests.csproj" Id="b35218ce-5dd9-4051-a568-38074e9a1d04" />
+  </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
-  <Project Path="./Favly.api/Favly.api.csproj" />
-  <Project Path="./Favly.Application/Favly.Application.csproj" />
-  <Project Path="./Favly.Domain/Favly.Domain.csproj" />
-  <Project Path="./Favly.Infrastructure/Favly.Infrastructure.csproj" />
+  <Project Path="Favly.api/Favly.api.csproj" />
+  <Project Path="Favly.Application/Favly.Application.csproj" />
+  <Project Path="Favly.Domain/Favly.Domain.csproj" />
+  <Project Path="Favly.Infrastructure/Favly.Infrastructure.csproj" />
 </Solution>
