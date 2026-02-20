@@ -91,3 +91,16 @@ Table NotificacaoPagamento {
   Pago boolean
 }
 ```
+---
+
+## Boas Práticas
+
+### Commits
+
+* Tipo: Define o tipo de alteração (**feat** para nova funcionalidade, **fix** para correção de bug, **docs** para documentação, **chore** para tarefas diversas, **refactor** para refatoração). 
+
+* Escopo: Indica a parte do código afetada (ex: frontend, auth, database).
+
+* Descrição: Uma frase curta, no modo imperativo, começando com letra maiúscula e sem ponto final. 
+
+> Ex: feat(auth): adicionar autenticação com Google. 
