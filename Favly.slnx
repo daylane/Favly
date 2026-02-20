@@ -1,9 +1,9 @@
 <Solution>
-  <Project Path="../../../../../../Documents/GitHub/Favly/docker-compose.dcproj">
+  <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
-  <Project Path="../../../../../../Documents/GitHub/Favly/Favly.api/Favly.api.csproj" />
-  <Project Path="../../../../../../Documents/GitHub/Favly/Favly.Application/Favly.Application.csproj" />
-  <Project Path="../../../../../../Documents/GitHub/Favly/Favly.Domain/Favly.Domain.csproj" />
-  <Project Path="../../../../../../Documents/GitHub/Favly/Favly.Infrastructure/Favly.Infrastructure.csproj" />
+  <Project Path="./Favly.api/Favly.api.csproj" />
+  <Project Path="./Favly.Application/Favly.Application.csproj" />
+  <Project Path="./Favly.Domain/Favly.Domain.csproj" />
+  <Project Path="./Favly.Infrastructure/Favly.Infrastructure.csproj" />
 </Solution>
