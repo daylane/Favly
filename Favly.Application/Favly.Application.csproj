@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Favly.Application.DTO\Favly.Application.DTO.csproj" />
-    <ProjectReference Include="..\..\Favly.Domain.Service\Favly.Domain.Services.csproj" />
     <ProjectReference Include="..\Favly.Domain\Favly.Domain.csproj" />
   </ItemGroup>
 
