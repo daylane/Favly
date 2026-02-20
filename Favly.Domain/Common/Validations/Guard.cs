@@ -17,7 +17,6 @@ namespace Favly.Domain.Common.Validations
             if (value is null)
                 throw new DomainException($"{parameterName} não pode ser nulo.");
         }
-
         public static void Against<TException>(bool condition, string message) where TException : Exception
         {
             if (condition)

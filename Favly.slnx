@@ -1,13 +1,9 @@
 <Solution>
-  <Folder Name="/3.0 - Domain/">
-    <Project Path="../Favly.Domain.Service/Favly.Domain.Service.csproj" Id="cf277b67-8008-4050-ac6a-a2f991e4da06" />
-    <Project Path="../Flavy.Domain.Core/Flavy.Domain.Core.csproj" Id="b5a63cfd-de9a-4254-990c-7081f8507db9" />
-    <Project Path="Favly.Domain/Favly.Domain.csproj" />
-  </Folder>
-  <Project Path="docker-compose.dcproj">
+  <Project Path="../../../../../../Documents/GitHub/Favly/docker-compose.dcproj">
     <Build />
   </Project>
-  <Project Path="Favly.api/Favly.api.csproj" />
-  <Project Path="Favly.Application/Favly.Application.csproj" />
-  <Project Path="Favly.Infrastructure/Favly.Infrastructure.csproj" />
+  <Project Path="../../../../../../Documents/GitHub/Favly/Favly.api/Favly.api.csproj" />
+  <Project Path="../../../../../../Documents/GitHub/Favly/Favly.Application/Favly.Application.csproj" />
+  <Project Path="../../../../../../Documents/GitHub/Favly/Favly.Domain/Favly.Domain.csproj" />
+  <Project Path="../../../../../../Documents/GitHub/Favly/Favly.Infrastructure/Favly.Infrastructure.csproj" />
 </Solution>
