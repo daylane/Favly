@@ -10,31 +10,29 @@ namespace Favly.Domain.ValueObjects
 {
     public class RecorrenciaTarefa : ValueObject
     {
-        public TipoRecorrencia TipoRecorrencia { get; private set; } 
-        public int Intervalo { get; private set; }
-    
-        private RecorrenciaTarefa(TipoRecorrencia recorrencia, int intervalo)
+        public List<DiasDaSemana> DiasDaSemana { get; private set; }
+        public string Frequencia { get; private set; } // "semanal"
+
+        private RecorrenciaTarefa(List<DiasDaSemana> diasDaSemana, string frequencia)
         {
-            Guard.AgainstNull(recorrencia, nameof(recorrencia));
-            Guard.AgainstNull(intervalo, nameof(intervalo));
-            Guard.AgainstInvalidEnum<TipoRecorrencia>(recorrencia, nameof(recorrencia));
+            Guard.AgainstNullOrWhiteSpace(frequencia, nameof(frequencia));
+            Guard.AgainstNull(diasDaSemana, nameof(diasDaSemana));
+            Guard.AgainstInvalidEnum<DiasDaSemana>(diasDaSemana, nameof(diasDaSemana));
 
-            if (intervalo < 0)
-                throw new DomainException("Intervalo deve ser maior que zero.");
 
-            Intervalo = intervalo;
-            TipoRecorrencia = recorrencia;
+            DiasDaSemana = diasDaSemana;
+            Frequencia = frequencia;
         }
 
-        public static RecorrenciaTarefa Criar(TipoRecorrencia recorrencia, int intervalo)
+        public static RecorrenciaTarefa Criar(List<DiasDaSemana> recorrencia, string frequencia)
         {
-            return new RecorrenciaTarefa(recorrencia, intervalo);
+            return new RecorrenciaTarefa(recorrencia, frequencia);
         }
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
-            yield return TipoRecorrencia;
-            yield return Intervalo;
+            yield return DiasDaSemana; //foreach (var dia in DiasDaSemana.OrderBy(d => d)) yield return dia;
+            yield return Frequencia;
         }
     }
 }

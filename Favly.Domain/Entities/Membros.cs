@@ -13,6 +13,6 @@ namespace Favly.Domain.Entities
         public int FamiliaId { get; private set; }
         public int UsuarioId { get; private set; }
 
-        public virtual Familia Familia { get; private set; }
+        public virtual Grupo Familia { get; private set; }
     }
 }

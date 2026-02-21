@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Favly.Domain.Entities
 {
-    internal class Familia : Entity
+    internal class Grupo : Entity
     {
         public string Nome { get; private set; }
         public string Convite { get; private set; }

@@ -17,7 +17,7 @@ namespace Favly.Domain.Common.Validations
             if (value is null)
                 throw new DomainException($"{parameterName} não pode ser nulo.");
         }
-        public static void AgainstNullOrWhiteSpace<T>(string value, string parameterName)
+        public static void AgainstNullOrWhiteSpace(string value, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new DomainException($"{parameterName} não pode ser nulo ou vazio.");
