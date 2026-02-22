@@ -3,7 +3,7 @@
     <File Path="DBML.md" />
   </Folder>
   <Folder Name="/Tests/">
-    <Project Path="../Favly.Domain.Tests/Favly.Domain.Tests.csproj" Id="b35218ce-5dd9-4051-a568-38074e9a1d04" />
+    <Project Path="../Favly.Domain.Tests/Favly.Domain.Tests.csproj" Id="0a94a6e3-4f65-4840-a887-2cc9f0336bd2" />
   </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />

@@ -1,9 +1,4 @@
-﻿using Favly.Application.Interfaces;
-using Favly.Application.Services;
-using Favly.Domain.Entities;
-using Favly.Domain.Interfaces;
-using Favly.Infrastructure.Context;
-using Favly.Infrastructure.Identity;
+﻿using Favly.Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +13,12 @@ namespace Favly.api.Extensions
     {
         public static IServiceCollection ResolveDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<AppDbContext>(options =>
+            //    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+            //services.AddIdentity<ApplicationUser, IdentityRole>()
+            //    .AddEntityFrameworkStores<AppDbContext>()
+            //    .AddDefaultTokenProviders();
             
             var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]!);
 
@@ -47,23 +42,23 @@ namespace Favly.api.Extensions
                 };
             });
 
-            var infrastructureAssembly = Assembly.GetAssembly(typeof(TokenService));
+            //var infrastructureAssembly = Assembly.GetAssembly(typeof(TokenService));
 
-            services.Scan(scan => scan
-                .FromAssemblies(infrastructureAssembly)
-                .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
-                .AsImplementedInterfaces() // Registra como IClassName
-                .WithScopedLifetime()      // Define o tempo de vida
-            );
+            //services.Scan(scan => scan
+            //    .FromAssemblies(infrastructureAssembly)
+            //    .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
+            //    .AsImplementedInterfaces() // Registra como IClassName
+            //    .WithScopedLifetime()      // Define o tempo de vida
+            //);
 
 
-            services.AddIdentityCore<ApplicationUser>(options => {
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
-                options.User.RequireUniqueEmail = true;
-            }).AddRoles<IdentityRole>() 
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
+            //services.AddIdentityCore<ApplicationUser>(options => {
+            //    options.Password.RequireDigit = true;
+            //    options.Password.RequiredLength = 8;
+            //    options.User.RequireUniqueEmail = true;
+            //}).AddRoles<IdentityRole>() 
+            //.AddEntityFrameworkStores<AppDbContext>()
+            //.AddDefaultTokenProviders();
 
             return services;
         }

@@ -22,4 +22,10 @@
     <ProjectReference Include="..\Favly.Domain\Favly.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Context\" />
+    <Folder Include="Identity\" />
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

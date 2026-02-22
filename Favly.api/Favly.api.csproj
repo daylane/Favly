@@ -30,4 +30,8 @@
     <ProjectReference Include="..\Favly.Infrastructure\Favly.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>
