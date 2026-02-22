@@ -4,10 +4,9 @@ using System.Text;
 
 namespace Favly.Domain.Common.Enums
 {
-    public enum Papel
+    public enum EscopoTarefa
     {
-        None = 0,
-        Administrador = 1,
-        Usuario = 2,
+        Pessoal = 1,
+        Familia = 2,
     }
 }
