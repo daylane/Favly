@@ -7,7 +7,7 @@ namespace Favly.Domain.Common.Base
     public abstract class ValueObject
     {
         protected abstract IEnumerable<object> GetEqualityComponents();
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())
                 return false;
@@ -20,5 +20,11 @@ namespace Favly.Domain.Common.Base
         {
            return GetEqualityComponents().Select(x => x != null ? x.GetHashCode() : 0).Aggregate((a, b) => a ^ b);
         }
+
+        public static bool operator ==(ValueObject left, ValueObject right)
+            => left?.Equals(right) ?? right is null;
+
+        public static bool operator !=(ValueObject left, ValueObject right)
+            => !(left == right);
     }
 }
