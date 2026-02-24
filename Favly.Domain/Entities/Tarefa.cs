@@ -26,12 +26,18 @@ namespace Favly.Domain.Entities
 
         public IReadOnlyCollection<Guid> MembrosAtribuidosIds => _membrosAtribuidosIds.AsReadOnly();
 
-        public Tarefa(Guid? tarefaPaiId, Guid familiaId, string titulo, string descricao, StatusTarefa status, EscopoTarefa escopo, DateTime proximaOcorrencia, RecorrenciaTarefa recorrencia)
+        public Tarefa(Guid? tarefaPaiId, List<Guid>? membrosAtribuidosIds, Guid familiaId, string titulo, string descricao, StatusTarefa status, EscopoTarefa escopo, DateTime proximaOcorrencia, RecorrenciaTarefa recorrencia)
         {
             Guard.AgainstEmptyGuid(familiaId, nameof(familiaId));
             Guard.AgainstNullOrWhiteSpace(titulo, nameof(titulo));
             Guard.AgainstInvalidEnum<StatusTarefa>(status, nameof(status));
             Guard.AgainstInvalidEnum<EscopoTarefa>(escopo, nameof(escopo));
+
+            if (escopo == EscopoTarefa.Pessoal)
+                Guard.Against<DomainException>(
+                    membrosAtribuidosIds == null || !membrosAtribuidosIds.Any(),
+                    "Uma tarefa de escopo Pessoal precisa de pelo menos um membro atribuído.");
+
 
             TarefaPaiId = tarefaPaiId;
             FamiliaId = familiaId;
@@ -41,27 +47,27 @@ namespace Favly.Domain.Entities
             Escopo = escopo;
             ProximaOcorrencia = proximaOcorrencia;
             Recorrencia = recorrencia;
-        }
 
+            membrosAtribuidosIds?.ForEach(id => { AdicionarMembro(id); });
+               
+        }
         public Tarefa CriarSubtarefa(string titulo, string descricao)
         {
-            Guard.Against<DomainException>(Status == StatusTarefa.Concluido || Status == StatusTarefa.Cancelado, "Não é possível adicionar subtarefas a uma tarefa finalizada.");
+            Guard.Against<DomainException>(
+                Status == StatusTarefa.Concluido || Status == StatusTarefa.Cancelado,
+                "Não é possível adicionar subtarefas a uma tarefa finalizada.");
 
             var subtarefa = new Tarefa(
                 tarefaPaiId: this.Id,
+                membrosAtribuidosIds: this._membrosAtribuidosIds, 
                 familiaId: this.FamiliaId,
                 titulo: titulo,
                 descricao: descricao,
                 status: StatusTarefa.Pendente,
-                escopo: this.Escopo,
+                escopo: this.Escopo, 
                 proximaOcorrencia: this.ProximaOcorrencia,
                 recorrencia: this.Recorrencia
             );
-
-            _membrosAtribuidosIds.ForEach(membroId =>
-            {
-                subtarefa.AdicionarMembro(membroId);
-            });
 
             return subtarefa;
         }
@@ -93,7 +99,7 @@ namespace Favly.Domain.Entities
 
         public void RemoverMembro(Guid membroId)
         {
-            Guard.Against<DomainException>(_membrosAtribuidosIds.Count <= 1, "A tarefa deve ter pelo menos um membro atribuído.");
+            Guard.Against<DomainException>(Escopo == EscopoTarefa.Pessoal && _membrosAtribuidosIds.Count <= 1, "Uma tarefa pessoal não pode ficar sem nenhum membro atribuído.");
 
             _membrosAtribuidosIds.Remove(membroId);
         }

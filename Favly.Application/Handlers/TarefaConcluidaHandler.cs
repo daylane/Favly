@@ -14,14 +14,13 @@ namespace Favly.Application.Handlers
         {
             var antiga = notification.Tarefa;
 
-            // Se não for recorrente, não fazemos nada
             if (antiga.Recorrencia == null) return;
 
-            // Criamos a nova instância para o futuro
             var proximaData = antiga.Recorrencia.CalcularProximaData(antiga.ProximaOcorrencia);
 
             var novaTarefa = new Tarefa(
                 antiga.TarefaPaiId,
+                antiga.MembrosAtribuidosIds.ToList(), 
                 antiga.FamiliaId,
                 antiga.Titulo,
                 antiga.Descricao,
@@ -31,13 +30,10 @@ namespace Favly.Application.Handlers
                 antiga.Recorrencia
             );
 
-            foreach (var membroId in antiga.MembrosAtribuidosIds)
-            {
-                novaTarefa.AdicionarMembro(membroId);
-            }
+            // Como o construtor já adicionou os membros, você não precisa mais do foreach aqui! (DRY)
 
-           //await _repository.AddAsync(novaTarefa);
-            // O Unit of Work salvará isso no banco ao final da transação
+           // await _repository.AddAsync(novaTarefa);
         }
     }
 }
+
