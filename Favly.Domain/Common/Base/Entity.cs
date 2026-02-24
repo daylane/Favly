@@ -11,6 +11,20 @@ namespace Favly.Domain.Common.Base
         public DateTime DataAtualizacao { get; protected set; }
         public bool Ativo { get; protected set; }
 
+        private readonly List<IDomainEvent> _domainEvents = new();
+        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+        protected void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            _domainEvents.Add(domainEvent);
+        }
+
+        public void ClearDomainEvents()
+        {
+            _domainEvents.Clear();
+        }
+
+
         protected Entity()
         {
             Id = Guid.NewGuid();

@@ -24,6 +24,7 @@ namespace Favly.Domain.ValueObjects
             if (intervalo <= 0)
                 throw new DomainException("Intervalo não pode ser negativo");
 
+            intervalo = intervalo;
             DiasDaSemana = diasDaSemana;
             Frequencia = frequencia;
         }
@@ -32,11 +33,21 @@ namespace Favly.Domain.ValueObjects
         {
             return new RecorrenciaTarefa(recorrencia, frequencia, intervalo);
         }
+        public DateTime CalcularProximaData(DateTime dataAtual)
+        {
+            return Frequencia switch
+            {
+                FrequenciaTarefa.Semanal => dataAtual.AddDays(7 * Intervalo),
+                FrequenciaTarefa.Mensal => dataAtual.AddMonths(Intervalo),
+                _ => dataAtual
+            };
+        }
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return DiasDaSemana; //foreach (var dia in DiasDaSemana.OrderBy(d => d)) yield return dia;
             yield return Frequencia;
+            yield return Intervalo;
         }
     }
 }
