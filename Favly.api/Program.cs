@@ -1,5 +1,6 @@
 using Favly.api.Extensions;
 using Favly.api.Middleware;
+using Wolverine;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,12 @@ builder.Services.ResolveDependencies(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//builder.Host.UseWolverine(opts =>
+//{
+//    // Configura o Outbox com EF Core para garantir consistência total
+//    opts.UseEntityFrameworkCoreOutbox<dbontext>();
+//});
 
 
 var app = builder.Build();
