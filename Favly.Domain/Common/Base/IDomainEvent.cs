@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Favly.Domain.Common.Base
 {
-    public interface IDomainEvent : INotification
+    public interface IDomainEvent
     {
-        DateTime OcorreuEm { get; }
+        public DateTime OcorreuEm { get; } 
     }
 }

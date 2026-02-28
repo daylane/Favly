@@ -16,10 +16,12 @@ namespace Favly.Domain.Entities
     {
         public Guid FamiliaId { get; private set; }
         public Guid MembroResponsavelId { get; private set; }
+        public Guid TarefaId { get; private set; }
         public string Titulo { get; private set; }
         public DinheiroPagamento Valor { get; private set; }
         public RecorrenciaTarefa Recorrencia { get; private set; }
         public DateTime DataVencimento { get; private set; }
+        public DateTime DataPagamento { get; private set; }
         public StatusPagamento Status { get; private set; }
 
         protected Pagamento() { }

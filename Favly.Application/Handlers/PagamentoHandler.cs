@@ -1,14 +1,11 @@
 ﻿using Favly.Domain.Entities;
 using Favly.Domain.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Favly.Application.Handlers
 {
     public static class PagamentoHandler
     {
-        public static async Task Handle(PagamentoRealizado @event)
+        public static async Task Handle(PagamentoRealizadoEvent @event)
         {
             var pago = @event.Pagamento;
 
