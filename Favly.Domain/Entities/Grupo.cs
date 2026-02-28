@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Favly.Domain.Entities
 {
-    internal class Grupo : Entity
+    internal class Grupo : AggregateRoot
     {
         public string Nome { get; private set; }
         public string Convite { get; private set; }
@@ -29,11 +29,9 @@ namespace Favly.Domain.Entities
             Convite = GerarCodigoConvite(); 
         }
 
-
         public void AdicionarMembro(Guid usuarioId, string apelido, PapelMembro role)
         {
-            if (_membros.Any(m => m.UsuarioId == usuarioId))
-                throw new DomainException("Este usuário já faz parte deste grupo.");
+            Guard.Against<DomainException>(_membros.Any(m => m.UsuarioId == usuarioId), "Este usuário já faz parte deste grupo.");
 
             var novoMembro = new Membro(this.Id, usuarioId, apelido, role);
             _membros.Add(novoMembro);

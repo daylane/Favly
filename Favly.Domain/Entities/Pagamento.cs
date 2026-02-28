@@ -2,6 +2,7 @@
 using Favly.Domain.Common.Enums;
 using Favly.Domain.Common.Exceptions;
 using Favly.Domain.Common.Validations;
+using Favly.Domain.Events;
 using Favly.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
@@ -61,8 +62,7 @@ namespace Favly.Domain.Entities
 
         public void Cancelar()
         {
-            if (Status == StatusPagamento.Pago)
-                throw new DomainException("Não é possível cancelar um pagamento que já foi realizado.");
+            Guard.Against<DomainException>(Status == StatusPagamento.Pago, "Não é possível cancelar um pagamento que já foi realizado.");
 
             Status = StatusPagamento.Cancelado;
             Ativo = false;

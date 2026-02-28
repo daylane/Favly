@@ -8,8 +8,5 @@ using System.Text;
 
 namespace Favly.Domain.Events
 {
-    public record TarefaConcluidaEvent(Guid TarefaId, 
-                                       Guid TarefaPaiId, 
-                                       StatusTarefa status,
-                                       string CodigoTransacao) : DomainEventBase;
+    public record TarefaConcluidaEvent(Tarefa Tarefa) : DomainEventBase;
 }
