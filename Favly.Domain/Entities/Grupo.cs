@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Favly.Domain.Entities
 {
-    internal class Grupo : AggregateRoot
+    public class Grupo : AggregateRoot
     {
         public string Nome { get; private set; }
         public string Convite { get; private set; }

@@ -8,21 +8,18 @@
 
   <ItemGroup>
     <Compile Remove="Interfaces\**" />
+    <Compile Remove="Mappers\**" />
+    <Compile Remove="Services\**" />
     <EmbeddedResource Remove="Interfaces\**" />
+    <EmbeddedResource Remove="Mappers\**" />
+    <EmbeddedResource Remove="Services\**" />
     <None Remove="Interfaces\**" />
+    <None Remove="Mappers\**" />
+    <None Remove="Services\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Favly.Domain\Favly.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Mappers\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MediatR" Version="14.0.0" />
   </ItemGroup>
 
 </Project>
