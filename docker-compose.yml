@@ -1,15 +1,15 @@
 services:
-  postgres:
-    image: postgres:16
-    container_name: favly_postgres
+  favly-db:
+    image: npgsql/postgres:latest
+    container_name: favly-postgres
     environment:
-      - POSTGRES_USER=FlDay
-      - POSTGRES_PASSWORD=S3flat123
-      - POSTGRES_DB=Flavly_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=docker178
+      - POSTGRES_DB=favly_db
     ports:
-      - "5433:5433"
+      - "5432:5432"
     volumes:
-    - pgdata:/var/lib/postgresql
+      - favly_data:/var/lib/postgresql/data
     
   favly.api:
     image: ${DOCKER_REGISTRY-}favlyapi
@@ -23,7 +23,6 @@ services:
       - postgres
 
 volumes:
-  pgdata:
-  
+  favly_data:
 
       

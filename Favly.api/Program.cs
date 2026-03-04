@@ -1,6 +1,10 @@
 using Favly.api.Extensions;
 using Favly.api.Middleware;
+using Favly.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using Wolverine;
+using Wolverine.EntityFrameworkCore;
+using Wolverine.Postgresql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +15,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//builder.Host.UseWolverine(opts =>
-//{
-//    // Configura o Outbox com EF Core para garantir consistência total
-//    opts.UseEntityFrameworkCoreOutbox<dbontext>();
-//});
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddDbContext<FavlyDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+builder.Host.UseWolverine(opts =>
+{
+    // Em vez de usar o método genérico de EF, use o do Postgres 
+    // passando a connection string. Ele se integra ao FavlyDbContext automaticamente.
+    opts.PersistMessagesWithPostgresql(connectionString);
+
+    // Isso ativa o Outbox especificamente para o seu contexto do EF
+    opts.UseEntityFrameworkCoreOutbox<FavlyDbContext>();
+
+    opts.Policies.AutoApplyTransactions();
+});
 
 var app = builder.Build();
 
