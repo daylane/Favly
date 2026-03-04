@@ -10,17 +10,6 @@ services:
       - "5432:5432"
     volumes:
       - favly_data:/var/lib/postgresql/data
-    
-  favly.api:
-    image: ${DOCKER_REGISTRY-}favlyapi
-    build:
-      context: Favly.api
-      dockerfile: Dockerfile
-    environment:
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5433;Database=Flavly_db;Username=FlDay;Password=S3flat123
-      - ASPNETCORE_ENVIRONMENT=Development
-    depends_on:
-      - postgres
 
 volumes:
   favly_data:
