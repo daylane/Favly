@@ -31,7 +31,7 @@ namespace Favly.Infrastructure.Data.Configurations
                 builder.HasKey(m => m.Id);
 
                 builder.Property(m => m.Apelido).HasMaxLength(50).IsRequired();
-                builder.Property(m => m.Role).HasConversion<int>(); 
+                builder.Property(m => m.Role).HasConversion<int>();
             }
         }
     }

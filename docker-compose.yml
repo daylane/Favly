@@ -1,6 +1,6 @@
 services:
   favly-db:
-    image: npgsql/postgres:latest
+    image: postgres:latest
     container_name: favly-postgres
     environment:
       - POSTGRES_USER=postgres
@@ -9,9 +9,21 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - favly_data:/var/lib/postgresql/data
+      - favly_data:/var/lib/postgresql  # MUDANÇA AQUI: Removemos o /data no final
+
+  favly.api:
+    build:
+      context: .
+      dockerfile: Favly.api/Dockerfile
+    container_name: favly-api-container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=favly-db;Port=5432;Database=favly_db;Username=postgres;Password=docker178
+    ports:
+      - "8082:8082"
+      - "8083:8083"
+    depends_on:
+      - favly-db
 
 volumes:
   favly_data:
-
-      

@@ -11,18 +11,13 @@ namespace Favly.Infrastructure.Data
 {
     public class FavlyDbContext : DbContext
     {
-        private readonly IMessageBus _bus; // Wolverine
-        public FavlyDbContext(DbContextOptions<FavlyDbContext> options, IMessageBus bus): base(options)
-        {
-            _bus = bus;
-        }
+        public FavlyDbContext(DbContextOptions<FavlyDbContext> options) : base(options) { }
 
-        public DbSet<Grupo> Grupos => Set<Grupo>();
-        public DbSet<Membro> Membros => Set<Membro>();
-        public DbSet<Tarefa> Tarefas => Set<Tarefa>();
-        public DbSet<Pagamento> Pagamentos => Set<Pagamento>();
-        public DbSet<Convite> Convites => Set<Convite>();
-
+        public DbSet<Tarefa> Tarefas { get; set; }
+        public DbSet<Pagamento> Pagamentos { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Convite> Convites { get; set; }
+        public DbSet<Membro> Membros { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,26 +27,5 @@ namespace Favly.Infrastructure.Data
 
             base.OnModelCreating(modelBuilder);
         }
-
-        public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
-        {
-            var entries = ChangeTracker.Entries<Entity>()
-                .Where(x => x.Entity.DomainEvents.Any())
-                .ToList();
-
-            var eventos = entries.SelectMany(x => x.Entity.DomainEvents).ToList();
-
-            entries.ForEach(x => x.Entity.ClearDomainEvents());
-
-            var result = await base.SaveChangesAsync(ct);
-
-            foreach (var @event in eventos)
-            {
-                await _bus.PublishAsync(@event);
-            }
-
-            return result;
-        }
-
     }
 }

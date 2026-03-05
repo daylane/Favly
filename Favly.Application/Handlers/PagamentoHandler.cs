@@ -7,7 +7,7 @@ namespace Favly.Application.Handlers
     {
         public static async Task Handle(PagamentoRealizadoEvent @event)
         {
-            var pago = @event.Pagamento;
+            var pago = @event.pagamento;
 
             if (pago.Recorrencia == null) return;
 

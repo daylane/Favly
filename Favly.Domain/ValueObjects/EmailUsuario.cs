@@ -16,6 +16,7 @@ namespace Favly.Domain.ValueObjects
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
         public string EnderecoEmail { get; private set; }
 
+        protected EmailUsuario() { }
         private EmailUsuario(string enderecoEmail)
         {
             Guard.AgainstNullOrWhiteSpace(enderecoEmail, nameof(enderecoEmail));

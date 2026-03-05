@@ -1,14 +1,13 @@
 ﻿using Favly.Domain.Common.Enums;
 using Favly.Domain.Entities;
 using Favly.Domain.Events;
-using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Favly.Application.Handlers
 {
-    public class TarefaConcluidaHandler : INotificationHandler<TarefaConcluidaEvent>
+    public class TarefaConcluidaHandler 
     {
         public async Task Handle(TarefaConcluidaEvent notification, CancellationToken cancellationToken)
         {

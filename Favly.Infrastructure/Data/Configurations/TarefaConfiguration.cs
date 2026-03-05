@@ -16,14 +16,18 @@ namespace Favly.Infrastructure.Data.Configurations
 
             builder.Property(t => t.Titulo).HasMaxLength(150).IsRequired();
 
-            // Mapeando o Value Object de Recorrência (DDD)
+            builder.Property(t => t.MembrosAtribuidosIds)
+             .HasColumnName("MembrosAtribuidosIds")
+             .HasField("_membrosAtribuidosIds") 
+             .UsePropertyAccessMode(PropertyAccessMode.Field)
+             .HasColumnType("uuid[]"); // Tipo nativo do Postgres
+
             builder.OwnsOne(t => t.Recorrencia, r =>
             {
                 r.Property(x => x.Frequencia).HasColumnName("RecorrenciaTipo");
                 r.Property(x => x.Intervalo).HasColumnName("RecorrenciaIntervalo");
             });
 
-            // Configuração de Subtarefas (Auto-relacionamento)
             builder.HasOne<Tarefa>()
                    .WithMany()
                    .HasForeignKey(t => t.TarefaPaiId)

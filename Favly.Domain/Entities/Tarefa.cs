@@ -26,6 +26,7 @@ namespace Favly.Domain.Entities
 
         public IReadOnlyCollection<Guid> MembrosAtribuidosIds => _membrosAtribuidosIds.AsReadOnly();
 
+        protected Tarefa() { }
         public Tarefa(Guid? tarefaPaiId, List<Guid>? membrosAtribuidosIds, Guid familiaId, string titulo, string descricao, StatusTarefa status, EscopoTarefa escopo, DateTime proximaOcorrencia, RecorrenciaTarefa recorrencia)
         {
             Guard.AgainstEmptyGuid(familiaId, nameof(familiaId));
