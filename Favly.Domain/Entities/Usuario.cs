@@ -2,6 +2,7 @@
 using Favly.Domain.Common.Exceptions;
 using Favly.Domain.Common.Validations;
 using Favly.Domain.Events;
+using Favly.Domain.Events.Usuario;
 using Favly.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,7 @@ namespace Favly.Domain.Entities
             CodigoAtivacao = string.Empty;
             AtualizarDataAtualizacao();
 
-            AddDomainEvent(new UsuarioAtivatoEvent(Id));
+            AddDomainEvent(new UsuarioAtivadoEvent(Id));
         }
 
         public void Atualizar(string nome, string avatar)

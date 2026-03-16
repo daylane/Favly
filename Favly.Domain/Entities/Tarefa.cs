@@ -16,7 +16,8 @@ namespace Favly.Domain.Entities
         private readonly List<Guid> _membrosAtribuidosIds = new();
 
         public Guid? TarefaPaiId { get; private set; }
-        public Guid FamiliaId { get; private set; }
+        public Guid? FamiliaId { get; private set; }          
+        public Guid MembroDonoId { get; private set; }      
         public string Titulo { get; private set; }
         public string Descricao { get; private set; }
         public StatusTarefa Status { get; private set; }
@@ -27,50 +28,102 @@ namespace Favly.Domain.Entities
         public IReadOnlyCollection<Guid> MembrosAtribuidosIds => _membrosAtribuidosIds.AsReadOnly();
 
         protected Tarefa() { }
-        public Tarefa(Guid? tarefaPaiId, List<Guid>? membrosAtribuidosIds, Guid familiaId, string titulo, string descricao, StatusTarefa status, EscopoTarefa escopo, DateTime proximaOcorrencia, RecorrenciaTarefa recorrencia)
+        private Tarefa(
+          Guid? tarefaPaiId,
+          Guid? familiaId,
+          Guid membroDonoId,
+          string titulo,
+          string descricao,
+          EscopoTarefa escopo,
+          DateTime proximaOcorrencia,
+          RecorrenciaTarefa recorrencia,
+          List<Guid>? membrosAtribuidosIds)
         {
-            Guard.AgainstEmptyGuid(familiaId, nameof(familiaId));
+            Guard.AgainstEmptyGuid(membroDonoId, nameof(membroDonoId));
             Guard.AgainstNullOrWhiteSpace(titulo, nameof(titulo));
-            Guard.AgainstInvalidEnum<StatusTarefa>(status, nameof(status));
             Guard.AgainstInvalidEnum<EscopoTarefa>(escopo, nameof(escopo));
 
+            // Tarefa de grupo exige FamiliaId
+            if (escopo == EscopoTarefa.Grupo)
+                Guard.Against<DomainException>(!familiaId.HasValue || familiaId == Guid.Empty,
+                    "Tarefa de grupo requer um grupo válido.");
+
+            // Tarefa pessoal com membros atribuídos deve ter ao menos um
             if (escopo == EscopoTarefa.Pessoal)
                 Guard.Against<DomainException>(
                     membrosAtribuidosIds == null || !membrosAtribuidosIds.Any(),
-                    "Uma tarefa de escopo Pessoal precisa de pelo menos um membro atribuído.");
-
+                    "Tarefa pessoal precisa de ao menos um membro atribuído.");
 
             TarefaPaiId = tarefaPaiId;
             FamiliaId = familiaId;
+            MembroDonoId = membroDonoId;
             Titulo = titulo;
             Descricao = descricao;
-            Status = status;
+            Status = StatusTarefa.Pendente;
             Escopo = escopo;
             ProximaOcorrencia = proximaOcorrencia;
             Recorrencia = recorrencia;
 
-            membrosAtribuidosIds?.ForEach(id => { AdicionarMembro(id); });
-               
+            membrosAtribuidosIds?.ForEach(AdicionarMembro);
         }
+        public static Tarefa CriarIndividual(
+             Guid membroDonoId,
+             string titulo,
+             string descricao,
+             DateTime proximaOcorrencia,
+             RecorrenciaTarefa recorrencia)
+        {
+            return new Tarefa(
+                tarefaPaiId: null,
+                familiaId: null,
+                membroDonoId: membroDonoId,
+                titulo: titulo,
+                descricao: descricao,
+                escopo: EscopoTarefa.Pessoal,
+                proximaOcorrencia: proximaOcorrencia,
+                recorrencia: recorrencia,
+                membrosAtribuidosIds: new List<Guid> { membroDonoId });
+        }
+
+        public static Tarefa CriarDoGrupo(
+            Guid familiaId,
+            Guid membroDonoId,
+            string titulo,
+            string descricao,
+            DateTime proximaOcorrencia,
+            RecorrenciaTarefa recorrencia,
+            List<Guid>? membrosAtribuidos = null)
+        {
+            return new Tarefa(
+                tarefaPaiId: null,
+                familiaId: familiaId,
+                membroDonoId: membroDonoId,
+                titulo: titulo,
+                descricao: descricao,
+                escopo: EscopoTarefa.Grupo,
+                proximaOcorrencia: proximaOcorrencia,
+                recorrencia: recorrencia,
+                membrosAtribuidosIds: membrosAtribuidos);
+        }
+
+        // --- Comportamentos ---
+
         public Tarefa CriarSubtarefa(string titulo, string descricao)
         {
             Guard.Against<DomainException>(
                 Status == StatusTarefa.Concluido || Status == StatusTarefa.Cancelado,
                 "Não é possível adicionar subtarefas a uma tarefa finalizada.");
 
-            var subtarefa = new Tarefa(
-                tarefaPaiId: this.Id,
-                membrosAtribuidosIds: this._membrosAtribuidosIds, 
-                familiaId: this.FamiliaId,
+            return new Tarefa(
+                tarefaPaiId: Id,
+                familiaId: FamiliaId,
+                membroDonoId: MembroDonoId,
                 titulo: titulo,
                 descricao: descricao,
-                status: StatusTarefa.Pendente,
-                escopo: this.Escopo, 
-                proximaOcorrencia: this.ProximaOcorrencia,
-                recorrencia: this.Recorrencia
-            );
-
-            return subtarefa;
+                escopo: Escopo,
+                proximaOcorrencia: ProximaOcorrencia,
+                recorrencia: Recorrencia,
+                membrosAtribuidosIds: _membrosAtribuidosIds.ToList());
         }
 
         public void Concluir()
@@ -78,16 +131,24 @@ namespace Favly.Domain.Entities
             if (Status == StatusTarefa.Concluido) return;
 
             Status = StatusTarefa.Concluido;
-            DataAtualizacao = DateTime.UtcNow;
+            AtualizarDataAtualizacao();
 
             if (Recorrencia != null)
+            {
+                ProximaOcorrencia = Recorrencia.CalcularProximaData(ProximaOcorrencia);
                 AddDomainEvent(new TarefaConcluidaEvent(this));
+            }
         }
+
         public void Cancelar()
         {
+            Guard.Against<DomainException>(
+                Status == StatusTarefa.Concluido,
+                "Não é possível cancelar uma tarefa já concluída.");
+
             Status = StatusTarefa.Cancelado;
-            Ativo = false;
-            DataAtualizacao = DateTime.UtcNow;
+            AtualizarAtivo();
+            AtualizarDataAtualizacao();
         }
 
         public void AdicionarMembro(Guid membroId)
@@ -100,7 +161,9 @@ namespace Favly.Domain.Entities
 
         public void RemoverMembro(Guid membroId)
         {
-            Guard.Against<DomainException>(Escopo == EscopoTarefa.Pessoal && _membrosAtribuidosIds.Count <= 1, "Uma tarefa pessoal não pode ficar sem nenhum membro atribuído.");
+            Guard.Against<DomainException>(
+                Escopo == EscopoTarefa.Pessoal && _membrosAtribuidosIds.Count <= 1,
+                "Tarefa pessoal não pode ficar sem nenhum membro atribuído.");
 
             _membrosAtribuidosIds.Remove(membroId);
         }

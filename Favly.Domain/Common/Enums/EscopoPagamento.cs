@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Favly.Domain.Common.Enums
 {
-    public enum EscopoTarefa
+    public enum EscopoPagamento
     {
-        Pessoal = 1,
-        Grupo = 2,
+        Grupo = 1,
+        Individual = 2 
     }
 }

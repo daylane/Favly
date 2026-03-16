@@ -15,58 +15,118 @@ namespace Favly.Domain.Entities
 {
     public class Pagamento : Entity
     {
-        public Guid FamiliaId { get; private set; }
+        public Guid? FamiliaId { get; private set; }             
         public Guid MembroResponsavelId { get; private set; }
-        public Guid TarefaId { get; private set; }
+        public Guid? TarefaId { get; private set; }               
         public string Titulo { get; private set; }
         public DinheiroPagamento Valor { get; private set; }
-        public RecorrenciaTarefa Recorrencia { get; private set; }
+        public RecorrenciaPagamento Recorrencia { get; private set; }
         public DateTime DataVencimento { get; private set; }
-        public DateTime DataPagamento { get; private set; }
+        public DateTime? DataPagamento { get; private set; }     
         public StatusPagamento Status { get; private set; }
+        public EscopoPagamento Escopo { get; private set; }
 
         protected Pagamento() { }
 
-        public Pagamento(
-            Guid familiaId,
+        private Pagamento(
+            Guid? familiaId,
             Guid membroResponsavelId,
+            Guid? tarefaId,
             string titulo,
             DinheiroPagamento valor,
             DateTime dataVencimento,
-            RecorrenciaTarefa recorrencia)
+            RecorrenciaPagamento recorrencia,
+            EscopoPagamento escopo)
         {
-            Guard.AgainstEmptyGuid(familiaId, nameof(familiaId));
             Guard.AgainstEmptyGuid(membroResponsavelId, nameof(membroResponsavelId));
             Guard.AgainstNullOrWhiteSpace(titulo, nameof(titulo));
             Guard.AgainstNull(valor, nameof(valor));
+            Guard.AgainstInvalidEnum<EscopoPagamento>(escopo, nameof(escopo));
+
+            if (escopo == EscopoPagamento.Grupo)
+                Guard.Against<DomainException>(!familiaId.HasValue || familiaId == Guid.Empty,
+                    "Despesa de grupo requer um grupo válido.");
 
             FamiliaId = familiaId;
             MembroResponsavelId = membroResponsavelId;
+            TarefaId = tarefaId;
             Titulo = titulo;
             Valor = valor;
             DataVencimento = dataVencimento;
             Recorrencia = recorrencia;
+            Escopo = escopo;
             Status = StatusPagamento.Pendente;
         }
 
+        public static Pagamento CriarDespesaDoGrupo(
+             Guid familiaId,
+             Guid membroResponsavelId,
+             string titulo,
+             DinheiroPagamento valor,
+             RecorrenciaPagamento recorrencia,
+             Guid? tarefaId = null)
+        {
+            var dataVencimento = recorrencia.CalcularProximoVencimento(DateTime.UtcNow);
+
+            return new Pagamento(
+                familiaId: familiaId,
+                membroResponsavelId: membroResponsavelId,
+                tarefaId: tarefaId,
+                titulo: titulo,
+                valor: valor,
+                dataVencimento: dataVencimento,
+                recorrencia: recorrencia,
+                escopo: EscopoPagamento.Grupo);
+        }
+
+        public static Pagamento CriarDespesaIndividual(
+            Guid membroResponsavelId,
+            string titulo,
+            DinheiroPagamento valor,
+            RecorrenciaPagamento recorrencia,
+            Guid? tarefaId = null)
+        {
+            var dataVencimento = recorrencia.CalcularProximoVencimento(DateTime.UtcNow);
+
+            return new Pagamento(
+                familiaId: null,
+                membroResponsavelId: membroResponsavelId,
+                tarefaId: tarefaId,
+                titulo: titulo,
+                valor: valor,
+                dataVencimento: dataVencimento,
+                recorrencia: recorrencia,
+                escopo: EscopoPagamento.Individual);
+        }
+
+        // --- Comportamentos ---
+
         public void Pagar()
         {
-            if (Status == StatusPagamento.Pago) return;
+            Guard.Against<DomainException>(Status == StatusPagamento.Pago,
+                "Este pagamento já foi realizado.");
 
             Status = StatusPagamento.Pago;
-            DataAtualizacao = DateTime.UtcNow;
+            DataPagamento = DateTime.UtcNow;
 
+            // Calcula próximo vencimento e dispara evento para criar próxima ocorrência
             if (Recorrencia != null)
+            {
+                DataVencimento = Recorrencia.CalcularProximoVencimento(DataVencimento);
                 AddDomainEvent(new PagamentoRealizadoEvent(this));
+            }
+
+            AtualizarDataAtualizacao();
         }
 
         public void Cancelar()
         {
-            Guard.Against<DomainException>(Status == StatusPagamento.Pago, "Não é possível cancelar um pagamento que já foi realizado.");
+            Guard.Against<DomainException>(Status == StatusPagamento.Pago,
+                "Não é possível cancelar um pagamento já realizado.");
 
             Status = StatusPagamento.Cancelado;
-            Ativo = false;
-            DataAtualizacao = DateTime.UtcNow;
+            AtualizarAtivo();
+            AtualizarDataAtualizacao();
         }
 
         public void VerificarAtraso()
@@ -74,6 +134,7 @@ namespace Favly.Domain.Entities
             if (Status == StatusPagamento.Pendente && DateTime.UtcNow.Date > DataVencimento.Date)
             {
                 Status = StatusPagamento.Atrasado;
+                AtualizarDataAtualizacao();
             }
         }
 

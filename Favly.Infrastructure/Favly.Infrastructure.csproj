@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2">
       <PrivateAssets>all</PrivateAssets>
@@ -24,12 +25,14 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.15.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Scrutor" Version="7.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
 	<PackageReference Include="WolverineFx" Version="5.16.4" />
 	<PackageReference Include="WolverineFx.EntityFrameworkCore" Version="5.16.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Favly.Application\Favly.Application.csproj" />
     <ProjectReference Include="..\Favly.Domain\Favly.Domain.csproj" />
   </ItemGroup>
 

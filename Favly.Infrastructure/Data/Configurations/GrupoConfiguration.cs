@@ -14,25 +14,18 @@ namespace Favly.Infrastructure.Data.Configurations
             builder.ToTable("Grupos");
             builder.HasKey(g => g.Id);
 
-            builder.Property(g => g.Nome).HasMaxLength(100).IsRequired();
-            builder.Property(g => g.Convite).HasMaxLength(10).IsFixedLength();
+            builder.Property(g => g.Nome)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(g => g.Convite)
+                .HasMaxLength(10)
+                .IsFixedLength();
 
             builder.HasMany(g => g.Membros)
-                   .WithOne()
-                   .HasForeignKey(m => m.FamiliaId)
-                   .OnDelete(DeleteBehavior.Cascade);
-        }
-
-        public class MembroConfiguration : IEntityTypeConfiguration<Membro>
-        {
-            public void Configure(EntityTypeBuilder<Membro> builder)
-            {
-                builder.ToTable("Membros");
-                builder.HasKey(m => m.Id);
-
-                builder.Property(m => m.Apelido).HasMaxLength(50).IsRequired();
-                builder.Property(m => m.Role).HasConversion<int>();
-            }
+                .WithOne()
+                .HasForeignKey(m => m.FamiliaId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

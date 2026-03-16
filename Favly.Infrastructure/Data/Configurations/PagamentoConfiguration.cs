@@ -12,24 +12,53 @@ namespace Favly.Infrastructure.Data.Configurations
         public void Configure(EntityTypeBuilder<Pagamento> builder)
         {
             builder.ToTable("Pagamentos");
-            builder.HasKey(p => p.Id); // Sempre bom reforçar a PK
+            builder.HasKey(p => p.Id);
 
-            // 1. Mapeando o Money VO (Já estava ok)
+            builder.Property(p => p.Titulo)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            builder.Property(p => p.FamiliaId)
+                .IsRequired(false); // nullable: despesa individual não tem grupo
+
+            builder.Property(p => p.TarefaId)
+                .IsRequired(false); // nullable: despesa não exige tarefa vinculada
+
+            builder.Property(p => p.DataPagamento)
+                .IsRequired(false); // nullable: só preenchido ao pagar
+
+            builder.Property(p => p.Escopo)
+                .HasConversion<int>()
+                .IsRequired();
+
+            builder.Property(p => p.Status)
+                .HasConversion<int>()
+                .IsRequired();
+
             builder.OwnsOne(p => p.Valor, v =>
             {
-                v.Property(x => x.Valor).HasColumnName("Montante").HasPrecision(18, 2);
-                v.Property(x => x.Moeda).HasColumnName("Moeda").HasMaxLength(3).HasDefaultValue("BRL");
+                v.Property(x => x.Valor)
+                    .HasColumnName("Montante")
+                    .HasPrecision(18, 2)
+                    .IsRequired();
+
+                v.Property(x => x.Moeda)
+                    .HasColumnName("Moeda")
+                    .HasMaxLength(3)
+                    .HasDefaultValue("BRL");
             });
 
-            // 2. ADICIONE ISSO AQUI: Mapeando a Recorrência no Pagamento
             builder.OwnsOne(p => p.Recorrencia, r =>
             {
-                r.Property(x => x.Frequencia).HasColumnName("RecorrenciaTipo");
-                r.Property(x => x.Intervalo).HasColumnName("RecorrenciaIntervalo");
-            });
+                r.Property(x => x.DiaVencimento)   
+                    .HasColumnName("RecorrenciaDiaVencimento")
+                    .IsRequired();
 
-            // Configurações adicionais recomendadas
-            builder.Property(p => p.Titulo).HasMaxLength(150).IsRequired();
+                r.Property(x => x.Frequencia)       
+                    .HasColumnName("RecorrenciaTipo")
+                    .HasConversion<int>()
+                    .IsRequired();
+            });
         }
     }
 }

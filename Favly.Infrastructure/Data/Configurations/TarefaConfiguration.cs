@@ -1,4 +1,5 @@
-﻿using Favly.Domain.Entities;
+﻿using Favly.Domain.Common.Enums;
+using Favly.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -14,24 +15,56 @@ namespace Favly.Infrastructure.Data.Configurations
             builder.ToTable("Tarefas");
             builder.HasKey(t => t.Id);
 
-            builder.Property(t => t.Titulo).HasMaxLength(150).IsRequired();
+            builder.Property(t => t.Titulo)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            builder.Property(t => t.FamiliaId)
+                .IsRequired(false); 
+
+            builder.Property(t => t.MembroDonoId)
+                .IsRequired();
+
+            builder.Property(t => t.Status)
+                .HasConversion<int>()
+                .IsRequired();
+
+            builder.Property(t => t.Escopo)
+                .HasConversion<int>()
+                .IsRequired();
 
             builder.Property(t => t.MembrosAtribuidosIds)
-             .HasColumnName("MembrosAtribuidosIds")
-             .HasField("_membrosAtribuidosIds") 
-             .UsePropertyAccessMode(PropertyAccessMode.Field)
-             .HasColumnType("uuid[]"); // Tipo nativo do Postgres
+                .HasColumnName("MembrosAtribuidosIds")
+                .HasField("_membrosAtribuidosIds")
+                .UsePropertyAccessMode(PropertyAccessMode.Field)
+                .HasColumnType("uuid[]");
 
             builder.OwnsOne(t => t.Recorrencia, r =>
             {
-                r.Property(x => x.Frequencia).HasColumnName("RecorrenciaTipo");
-                r.Property(x => x.Intervalo).HasColumnName("RecorrenciaIntervalo");
+                r.Property(x => x.Frequencia)       // enum FrequenciaTarefa
+                    .HasColumnName("RecorrenciaTipo")
+                    .HasConversion<int>()
+                    .IsRequired();
+
+                r.Property(x => x.Intervalo)
+                    .HasColumnName("RecorrenciaIntervalo")
+                    .IsRequired();
+
+                r.Property(x => x.DiasDaSemana)
+                    .HasColumnName("Recorrencia_DiasDaSemana")
+                    .HasField("DiasDaSemana")
+                    .HasConversion(
+                        v => v.Select(d => (int)d).ToList(),
+                        v => v.Select(d => (DiasDaSemana)d).ToList())
+                    .HasColumnType("integer[]");
             });
 
+            // Auto-referência: subtarefas
             builder.HasOne<Tarefa>()
-                   .WithMany()
-                   .HasForeignKey(t => t.TarefaPaiId)
-                   .OnDelete(DeleteBehavior.Restrict);
+                .WithMany()
+                .HasForeignKey(t => t.TarefaPaiId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

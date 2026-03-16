@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Favly.Domain.Common.Enums
 {
-    public enum FrequenciaTarefa
+    public enum FrequenciaOcorrencia
     {
         Diaria = 1,
         Semanal = 2,

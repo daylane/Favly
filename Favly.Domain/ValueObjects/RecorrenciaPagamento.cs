@@ -11,22 +11,37 @@ namespace Favly.Domain.ValueObjects
     public class RecorrenciaPagamento : ValueObject
     {
         public int DiaVencimento { get; }
-        public string Frequencia { get; } // "Mensal"
+        public FrequenciaOcorrencia Frequencia { get; private set; }
 
-        public RecorrenciaPagamento(int diaVencimento, string frequencia)
+        protected RecorrenciaPagamento() { } // EF Core
+
+        private RecorrenciaPagamento(int diaVencimento, FrequenciaOcorrencia frequencia)
         {
-            Guard.AgainstNull(diaVencimento, nameof(diaVencimento));
-            Guard.AgainstNullOrWhiteSpace(frequencia, nameof(frequencia));
-
-            if (diaVencimento < 1 || diaVencimento > 31)
-                throw new DomainException("Dia de vencimento inválido.");
+            Guard.AgainstInvalidEnum<FrequenciaOcorrencia>(frequencia, nameof(frequencia));
+            Guard.Against<DomainException>(diaVencimento < 1 || diaVencimento > 31, "Dia de vencimento deve estar entre 1 e 31.");
 
             DiaVencimento = diaVencimento;
             Frequencia = frequencia;
         }
-        public static RecorrenciaPagamento Criar(int diaVencimento, string frequencia)
+        public static RecorrenciaPagamento Criar(int diaVencimento, FrequenciaOcorrencia frequencia)
+           => new(diaVencimento, frequencia);
+
+        // Atalhos semânticos
+        public static RecorrenciaPagamento CriarMensal(int diaVencimento)
+            => new(diaVencimento, FrequenciaOcorrencia.Mensal);
+
+        public static RecorrenciaPagamento CriarAnual(int diaVencimento)
+            => new(diaVencimento, FrequenciaOcorrencia.Anual);
+
+        public DateTime CalcularProximoVencimento(DateTime dataAtual)
         {
-            return new RecorrenciaPagamento(diaVencimento, frequencia);
+            return Frequencia switch
+            {
+                FrequenciaOcorrencia.Mensal => new DateTime(dataAtual.Year, dataAtual.Month, DiaVencimento)
+                                                .AddMonths(dataAtual.Day >= DiaVencimento ? 1 : 0),
+                FrequenciaOcorrencia.Anual => new DateTime(dataAtual.Year + 1, dataAtual.Month, DiaVencimento),
+                _ => throw new DomainException($"Frequência '{Frequencia}' não suportada.")
+            };
         }
 
         protected override IEnumerable<object> GetEqualityComponents()
