@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿using Favly.Domain.Common.Exceptions;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
+
 
 namespace Favly.api.Middleware
 {
-    public class ExceptionMiddleware(RequestDelegate _next, ILogger<ExceptionMiddleware> _logger)
+    public class ExceptionMiddleware(RequestDelegate _next, ILogger<ExceptionMiddleware> _logger, IHostEnvironment _env)
     {
         public async Task InvokeAsync(HttpContext context)
         {
@@ -16,24 +15,58 @@ namespace Favly.api.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro não tratado.");
+                _logger.LogError(ex, "Erro não tratado: {Message}", ex.Message);
                 await HandleExceptionAsync(context, ex);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            var response = new
+            (HttpStatusCode statusCode, string message, IEnumerable<string>? errors) = exception switch
             {
-                StatusCode = context.Response.StatusCode,
-                Message = "Erro interno no servidor do Favly. Tente novamente mais tarde.",
-                Detailed = exception.Message // Em produção, você esconderia isso!
-            };
+                DomainException ex => (
+                    HttpStatusCode.BadRequest,
+                    ex.Message,
+                    (IEnumerable<string>?)null),
 
-            return context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                NotFoundException ex => (
+                    HttpStatusCode.NotFound,
+                    ex.Message,
+                    (IEnumerable<string>?)null),
+
+                _ => (
+                    HttpStatusCode.InternalServerError,
+                    "Erro interno no servidor. Tente novamente mais tarde.",
+                    (IEnumerable<string>?)null)
+            };
+            context.Response.StatusCode = (int)statusCode;
+
+            var response = new ErrorResponse(
+                StatusCode: context.Response.StatusCode,
+                Message: message,
+                Errors: errors,
+                // Detalhes técnicos só aparecem em desenvolvimento
+                Detail: _env.IsDevelopment() && statusCode == HttpStatusCode.InternalServerError
+                    ? exception.ToString()
+                    : null);
+
+            var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            });
+
+            return context.Response.WriteAsync(json);
         }
     }
+
+    // Resposta padronizada para todos os erros
+    public record ErrorResponse(
+        int StatusCode,
+        string Message,
+        IEnumerable<string>? Errors,
+        string? Detail);
 }
+
