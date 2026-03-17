@@ -181,7 +181,15 @@ docker-compose up favly-db -d
 dotnet run --project Favly.api
 ```
 
-A API estará disponível em `http://localhost:8082` e o Swagger em `http://localhost:8082/index.html`.
+A API estará disponível em:
+
+| Modo | URL |
+|---|---|
+| `dotnet run` (http) | `http://localhost:5019` |
+| `dotnet run` (https) | `https://localhost:7243` |
+| Docker | `http://localhost:8083` / `https://localhost:8082` |
+
+O Swagger estará na raiz: `http://localhost:5019`
 
 ### Ou rode tudo com Docker Compose
 
@@ -193,10 +201,15 @@ docker-compose up --build
 
 ## 🔐 Autenticação
 
-A API usa **JWT Bearer Token**. Para acessar endpoints protegidos:
+A API usa **JWT Bearer Token**. Para acessar endpoints protegidos
 
 ---
 
+## 🧪 Testes
+
+> Em desenvolvimento.
+
+---
 
 ## Projeto desenvolvido para fins de aprendizado e uso pessoal.
 
