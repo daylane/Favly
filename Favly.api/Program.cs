@@ -1,7 +1,9 @@
 using Favly.api.Extensions;
 using Favly.api.Middleware;
-using Favly.Domain.Common.Base;
+using Favly.Application.Extensions;
+using Favly.Application.Usuarios.Commands.CriarUsuario;
 using Favly.Infrastructure.Data;
+using Favly.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
@@ -9,14 +11,14 @@ using Wolverine.Postgresql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.ResolveDependencies(builder.Configuration);
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddApplicationServices();                        
+builder.Services.AddInfrastructureServices();                   
+builder.Services.AddApiServices(builder.Configuration);
+
 
 builder.Services.AddDbContext<FavlyDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -24,6 +26,9 @@ builder.Services.AddDbContext<FavlyDbContext>(options =>
 builder.Host.UseWolverine(opts =>
 {
     opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
+
+    opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(CriarUsuarioHandler).Assembly);
 
     opts.PersistMessagesWithPostgresql(connectionString);
     opts.UseEntityFrameworkCoreTransactions();
@@ -42,10 +47,10 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/openapi/v1.json", "favly v1");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Favly v1");
         options.RoutePrefix = string.Empty;
     });
 }

@@ -52,7 +52,6 @@ namespace Favly.Infrastructure.Data.Configurations
 
                 r.Property(x => x.DiasDaSemana)
                     .HasColumnName("Recorrencia_DiasDaSemana")
-                    .HasField("DiasDaSemana")
                     .HasConversion(
                         v => v.Select(d => (int)d).ToList(),
                         v => v.Select(d => (DiasDaSemana)d).ToList())
