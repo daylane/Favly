@@ -19,7 +19,8 @@ namespace Favly.Infrastructure.Extensions
                 .AddClasses(classes => classes
                     .Where(type =>
                         type.Name.EndsWith("Repository") ||
-                        type.Name.EndsWith("Service")))
+                        type.Name.EndsWith("Service")    ||
+                        type.Name.EndsWith("Hasher")))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
