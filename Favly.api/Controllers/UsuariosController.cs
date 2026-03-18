@@ -12,12 +12,8 @@ namespace Favly.api.Controllers
 {
     [ApiController]
     [Route("api/usuarios")]
-    public class UsuariosController : ControllerBase
+    public class UsuariosController(IMessageBus _bus) : ControllerBase
     {
-        private readonly IMessageBus _bus;
-
-        public UsuariosController(IMessageBus bus) => _bus = bus;
-
         [HttpPost]
         [ProducesResponseType(typeof(UsuarioResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -70,7 +66,4 @@ namespace Favly.api.Controllers
             return NoContent();
         }
     }
-
-    public record AtivarContaRequest(string Codigo);
-    public record AtualizarContaRequest(string Nome, string? Avatar);
 }
