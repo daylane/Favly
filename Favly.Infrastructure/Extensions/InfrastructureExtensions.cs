@@ -20,7 +20,9 @@ namespace Favly.Infrastructure.Extensions
                     .Where(type =>
                         type.Name.EndsWith("Repository") ||
                         type.Name.EndsWith("Service")    ||
-                        type.Name.EndsWith("Hasher")))
+                        type.Name.EndsWith("Hasher")     ||
+                        type.Name.EndsWith("Work")       ||  
+                        type.Name.EndsWith("Middleware")))  
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 

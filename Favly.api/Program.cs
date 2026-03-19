@@ -11,7 +11,8 @@ using Wolverine.Postgresql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' não encontrada.");
 
 builder.Services.AddControllers();
 
@@ -30,16 +31,25 @@ builder.Host.UseWolverine(opts =>
     opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
     opts.Discovery.IncludeAssembly(typeof(CriarUsuarioHandler).Assembly);
 
-    opts.PersistMessagesWithPostgresql(connectionString);
-    opts.UseEntityFrameworkCoreTransactions();
-    opts.Policies.AutoApplyTransactions();
+    opts.Policies.AddMiddleware<UnitOfWorkMiddleware>();
+
+    if (!builder.Environment.IsEnvironment("Testing"))
+    {
+        opts.PersistMessagesWithPostgresql(connectionString);
+        opts.UseEntityFrameworkCoreTransactions();
+        opts.Policies.AutoApplyTransactions();
+    }
+    else
+    {
+        opts.Policies.AutoApplyTransactions();
+    }
 });
 
 var app = builder.Build();
 
-
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<FavlyDbContext>();
     db.Database.Migrate();
 }
@@ -65,3 +75,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
