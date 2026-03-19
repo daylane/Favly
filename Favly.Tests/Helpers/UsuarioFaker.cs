@@ -40,14 +40,14 @@ namespace Favly.Tests.Helpers
         public static CriarUsuarioCommand CriarUsuarioCommand() =>
             new(
                 Nome: _faker.Name.FullName(),
-                Email: _faker.Internet.Email(),
+                Email: _faker.Internet.Email().ToLower(),
                 Senha: "Senha@" + _faker.Random.Number(100, 999),
                 Avatar: null);
 
         public static CriarUsuarioCommand CriarUsuarioCommandComEmail(string email) =>
             new(
                 Nome: _faker.Name.FullName(),
-                Email: email,
+                Email: email.ToLower(),
                 Senha: "Senha@123",
                 Avatar: null);
 
