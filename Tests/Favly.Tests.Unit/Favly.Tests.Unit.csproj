@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Application\NovaPasta\**" />
+    <EmbeddedResource Remove="Application\NovaPasta\**" />
+    <None Remove="Application\NovaPasta\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.5" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="FluentAssertions" Version="8.9.0" />
@@ -20,13 +26,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <ProjectReference Include="..\..\Favly.Application\Favly.Application.csproj" />
+    <ProjectReference Include="..\..\Favly.Domain\Favly.Domain.csproj" />
+    <ProjectReference Include="..\..\Favly.Infrastructure\Favly.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Favly.Domain\Favly.Domain.csproj" />
-    <ProjectReference Include="..\Favly.Application\Favly.Application.csproj" />
-    <ProjectReference Include="..\Favly.Infrastructure\Favly.Infrastructure.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
 </Project>

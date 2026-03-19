@@ -9,5 +9,8 @@
   <Project Path="Favly.Application/Favly.Application.csproj" />
   <Project Path="Favly.Domain/Favly.Domain.csproj" />
   <Project Path="Favly.Infrastructure/Favly.Infrastructure.csproj" />
-  <Project Path="Favly.Tests/Favly.Tests.csproj" />
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Favly.Tests.Integration/Favly.Tests.Integration.csproj" Id="fd8aa883-e48f-4bfc-afe0-bead199b14cc" />
+    <Project Path="Tests/Favly.Tests.Unit/Favly.Tests.Unit.csproj" />
+  </Folder>
 </Solution>

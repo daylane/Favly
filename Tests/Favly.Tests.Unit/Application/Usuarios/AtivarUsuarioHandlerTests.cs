@@ -1,14 +1,10 @@
 ﻿using Favly.Application.Usuarios.Commands.AtivarUsuario;
-using Favly.Application.Usuarios.Commands.AtualizarUsuario;
 using Favly.Domain.Common.Exceptions;
 using Favly.Domain.Entities;
 using Favly.Domain.Interfaces;
 using Favly.Tests.Helpers;
 using FluentAssertions;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Favly.Tests.Unit.Application.Usuarios
 {
