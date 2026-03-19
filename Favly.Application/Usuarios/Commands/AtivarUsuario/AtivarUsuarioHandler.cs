@@ -8,7 +8,7 @@ namespace Favly.Application.Usuarios.Commands.AtivarUsuario
 {
     public class AtivarUsuarioHandler
     {
-        public static async Task Handle(
+        public static async Task<bool> Handle(
                AtivarUsuarioCommand command,
                IUsuarioRepository repository,
                CancellationToken ct)
@@ -19,6 +19,8 @@ namespace Favly.Application.Usuarios.Commands.AtivarUsuario
 
             usuario!.Ativar(command.CodigoAtivacao);
             repository.Atualizar(usuario);
+
+            return true;
         }
     }
 }
