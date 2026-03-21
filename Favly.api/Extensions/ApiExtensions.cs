@@ -21,7 +21,12 @@ namespace Favly.api.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
+            var jwtKey = configuration["Jwt:Key"];
+
+            if (string.IsNullOrEmpty(jwtKey))
+                throw new InvalidOperationException("Jwt:Key não configurada.");
+
+            var key = Encoding.UTF8.GetBytes(jwtKey);
 
             services.AddAuthentication(options =>
             {

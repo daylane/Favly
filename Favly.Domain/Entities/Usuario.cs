@@ -29,6 +29,7 @@ namespace Favly.Domain.Entities
             Avatar = avatar;
             CodigoAtivacao = codigoAtivacao;
             DataAtualizacao = DataCriacao;
+            Ativo = false;
 
             AddDomainEvent(new UsuarioCriadoEvent(Id, email.EnderecoEmail, nome));
         }

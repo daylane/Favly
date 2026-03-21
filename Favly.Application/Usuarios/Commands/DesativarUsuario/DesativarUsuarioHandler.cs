@@ -8,7 +8,7 @@ namespace Favly.Application.Usuarios.Commands.DesativarUsuario
 {
     public class DesativarUsuarioHandler
     {
-        public static async Task Handle(
+        public static async Task<bool> Handle(
           DesativarUsuarioCommand command,
           IUsuarioRepository repository,
           CancellationToken ct)
@@ -19,6 +19,8 @@ namespace Favly.Application.Usuarios.Commands.DesativarUsuario
 
             usuario!.Desativar();
             repository.Atualizar(usuario);
+
+            return true;
         }
     }
 }

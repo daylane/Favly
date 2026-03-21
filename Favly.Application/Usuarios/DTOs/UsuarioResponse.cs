@@ -11,7 +11,8 @@ namespace Favly.Application.Usuarios.DTOs
       string Email,
       string Avatar,
       bool Ativo,
-      DateTime DataCriacao)
+      DateTime DataCriacao,
+      string CodigoAtivacao)
     {
         public static UsuarioResponse FromEntity(Usuario usuario) => new(
             usuario.Id,
@@ -19,6 +20,7 @@ namespace Favly.Application.Usuarios.DTOs
             usuario.Email.EnderecoEmail,
             usuario.Avatar,
             usuario.Ativo,
-            usuario.DataCriacao);
+            usuario.DataCriacao,
+            usuario.CodigoAtivacao);
     }
 }
