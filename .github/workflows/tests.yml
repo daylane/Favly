@@ -4,49 +4,42 @@ on:
   pull_request:
     branches: [ master, develop ]
   push:
-    branches: [ develop ]
+    branches: [ develop, master ]
 
 jobs:
   unit-tests:
     name: Testes Unitários
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-
-      - name: Restore
-        run: dotnet restore Favly.slnx
-
-      - name: Build
-        run: dotnet build Favly.slnx --no-restore --configuration Release
-
-      - name: Rodar testes unitários
-        run: dotnet test Tests/Favly.Tests.Unit --no-build --configuration Release --verbosity normal
+      - run: dotnet restore Favly.slnx
+      - run: dotnet build Favly.slnx --no-restore --configuration Release
+      - run: dotnet test Tests/Favly.Tests.Unit --no-build --configuration Release --verbosity normal
 
   integration-tests:
     name: Testes de Integração
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+      - run: dotnet restore Favly.slnx
+      - run: dotnet build Favly.slnx --no-restore --configuration Release
+      - run: dotnet test Tests/Favly.Tests.Integration --no-build --configuration Release --verbosity normal
 
-      - name: Restore
-        run: dotnet restore Favly.slnx
-
-      - name: Build
-        run: dotnet build Favly.slnx --no-restore --configuration Release
-
-      - name: Rodar testes de integração
-        run: dotnet test Tests/Favly.Tests.Integration --no-build --configuration Release --verbosity normal
+  auto-merge:
+    name: Auto Merge
+    runs-on: ubuntu-latest
+    needs: [ unit-tests, integration-tests ] # só roda se os dois passarem
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Auto merge PR
+        uses: pascalgn/automerge-action@v0.16.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_METHOD: squash
+          MERGE_LABELS: ""
