@@ -21,10 +21,10 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore Favly.slnx
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build Favly.slnx --no-restore --configuration Release
 
       - name: Rodar testes unitários
         run: dotnet test Tests/Favly.Tests.Unit --no-build --configuration Release --verbosity normal
@@ -43,10 +43,10 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore Favly.slnx
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build Favly.slnx --no-restore --configuration Release
 
       - name: Rodar testes de integração
         run: dotnet test Tests/Favly.Tests.Integration --no-build --configuration Release --verbosity normal
