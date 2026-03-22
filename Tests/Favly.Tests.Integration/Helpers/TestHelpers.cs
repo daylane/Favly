@@ -17,7 +17,7 @@ namespace Favly.Tests.Integration.Helpers
             var usuario = await criarResponse.Content.ReadFromJsonAsync<UsuarioResponse>();
 
             await client.PostAsJsonAsync(
-                $"/api/usuarios/{usuario!.Id}/ativar",
+                $"/api/usuarios/{usuario!.Email}/ativar",
                 new { Codigo = usuario.CodigoAtivacao });
 
             return (command.Email, command.Senha);

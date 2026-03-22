@@ -60,7 +60,7 @@ namespace Favly.Tests.Integration.Integration
             var usuario = await criarResponse.Content.ReadFromJsonAsync<UsuarioResponse>();
 
             var response = await _client.PostAsJsonAsync(
-                $"/api/usuarios/{usuario!.Id}/ativar",
+                $"/api/usuarios/{usuario!.Email}/ativar",
                 new { Codigo = usuario.CodigoAtivacao });
 
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -74,7 +74,7 @@ namespace Favly.Tests.Integration.Integration
             var usuario = await criarResponse.Content.ReadFromJsonAsync<UsuarioResponse>();
 
             var response = await _client.PostAsJsonAsync(
-                $"/api/usuarios/{usuario!.Id}/ativar",
+                $"/api/usuarios/{usuario!.Email}/ativar",
                 new { Codigo = "ERRADO12" });
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
