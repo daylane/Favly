@@ -17,9 +17,7 @@ namespace Favly.Application.Usuarios.Events
             var usuario = await repository.ObterPorIdAsync(evento.UsuarioId, ct);
 
             if (usuario is null)
-            {
-                return; 
-            }
+                return;
 
             await emailService.EnviarCodigoAtivacaoAsync(
                 email: usuario.Email.EnderecoEmail,
