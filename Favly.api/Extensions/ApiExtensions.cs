@@ -16,7 +16,7 @@ namespace Favly.api.Extensions
 
             return services;
         }
-
+       
         private static IServiceCollection AddJwtAuthentication(
             this IServiceCollection services,
             IConfiguration configuration)

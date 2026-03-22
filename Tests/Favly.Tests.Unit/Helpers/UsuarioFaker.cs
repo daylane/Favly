@@ -59,8 +59,8 @@ namespace Favly.Tests.Helpers
               Nome: _faker.Name.FullName(),
               Avatar: _faker.Internet.Avatar());
 
-        public static AtivarUsuarioCommand AtivarUsuarioCommand(Guid usuarioId, string codigo) =>
-            new(UsuarioId: usuarioId, CodigoAtivacao: codigo);
+        public static AtivarUsuarioCommand AtivarUsuarioCommand(string email, string codigo) =>
+            new(Email: email, CodigoAtivacao: codigo);
         public static DesativarUsuarioCommand DesativarUsuarioCommand(Guid usuarioId) =>
             new(UsuarioId: usuarioId);
 
