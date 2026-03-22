@@ -1,0 +1,63 @@
+﻿using Favly.Domain.Interfaces;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using MimeKit;
+
+
+namespace Favly.Infrastructure.Email
+{
+    public class EmailService(IConfiguration _configuration, ILogger<EmailService> _logger) : IEmailService
+    {
+        public async Task EnviarCodigoAtivacaoAsync(string email, string nome, string codigo, CancellationToken ct = default)
+        {
+            var host = _configuration["Email:Host"] ?? throw new InvalidOperationException("Email:Host não configurado.");
+            var port = int.Parse(_configuration["Email:Port"] ?? "587");
+            var conta = _configuration["Email:Conta"] ?? throw new InvalidOperationException("Email:Conta não configurado.");
+            var senha = _configuration["Email:Senha"] ?? throw new InvalidOperationException("Email:Senha não configurado.");
+            var nomeRemetente = _configuration["Email:NomeRemetente"] ?? "Favly";
+
+            var mensagem = new MimeMessage();
+            mensagem.From.Add(new MailboxAddress(nomeRemetente, conta));
+            mensagem.To.Add(new MailboxAddress(nome, email));
+            mensagem.Subject = "Ative sua conta no Favly 🏠";
+            mensagem.Body = new TextPart("html")
+            {
+                Text = GerarCorpoEmail(nome, codigo)
+            };
+
+            using var client = new SmtpClient();
+
+            await client.ConnectAsync(host, port, SecureSocketOptions.Auto, ct);
+            await client.AuthenticateAsync(conta, senha, ct);
+            await client.SendAsync(mensagem, ct);
+            await client.DisconnectAsync(true, ct);
+
+            _logger.LogInformation("E-mail de ativação enviado para {Email}", email);
+        }
+
+        private static string GerarCorpoEmail(string nome, string codigo) => $"""
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #333;">Olá, {nome}! 👋</h2>
+                <p>Obrigada por se cadastrar no <strong>Favly</strong>.</p>
+                <p>Use o código abaixo para ativar sua conta:</p>
+                <div style="background-color: #f4f4f4; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+                    <h1 style="color: #4A90E2; letter-spacing: 8px; font-size: 36px; margin: 0;">
+                        {codigo}
+                    </h1>
+                </div>
+                <p style="color: #666; font-size: 14px;">
+                    Este código expira em <strong>24 horas</strong>.<br/>
+                    Se você não criou uma conta no Favly, ignore este e-mail.
+                </p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+                <p style="color: #999; font-size: 12px;">Favly — Organização para grupos e indivíduos</p>
+            </body>
+            </html>
+            """;
+    }
+}
+

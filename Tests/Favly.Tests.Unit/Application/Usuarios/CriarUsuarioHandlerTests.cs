@@ -8,6 +8,7 @@ using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Wolverine;
 
 namespace Favly.Tests.Unit.Application.Usuarios
 {
@@ -15,6 +16,8 @@ namespace Favly.Tests.Unit.Application.Usuarios
     {
         private readonly IUsuarioRepository _repository = Substitute.For<IUsuarioRepository>();
         private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
+        private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
+        private readonly IMessageBus _bus = Substitute.For<IMessageBus>();
 
         [Fact]
         public async Task Handle_ComDadosValidos_DeveCriarERetornarUsuario()
@@ -23,7 +26,7 @@ namespace Favly.Tests.Unit.Application.Usuarios
             _repository.EmailExisteAsync(command.Email, default).Returns(false);
             _hasher.Hash(command.Senha).Returns("hash-bcrypt");
 
-            var result = await CriarUsuarioHandler.Handle(command, _repository, _hasher, default);
+            var result = await CriarUsuarioHandler.Handle(command, _repository, _hasher, _uow, _bus,default);
 
             result.Should().NotBeNull();
             result.Nome.Should().Be(command.Nome);
@@ -41,7 +44,7 @@ namespace Favly.Tests.Unit.Application.Usuarios
             var command = UsuarioFaker.CriarUsuarioCommand();
             _repository.EmailExisteAsync(command.Email, default).Returns(true);
 
-            var act = async () => await CriarUsuarioHandler.Handle(command, _repository, _hasher, default);
+            var act = async () => await CriarUsuarioHandler.Handle(command, _repository, _hasher, _uow,_bus,default);
 
             await act.Should().ThrowAsync<DomainException>()
                 .WithMessage("*e-mail*uso*");
@@ -54,7 +57,7 @@ namespace Favly.Tests.Unit.Application.Usuarios
             _repository.EmailExisteAsync(command.Email, default).Returns(false);
             _hasher.Hash(command.Senha).Returns("hash-gerado");
 
-            await CriarUsuarioHandler.Handle(command, _repository, _hasher, default);
+            await CriarUsuarioHandler.Handle(command, _repository, _hasher, _uow,_bus,default);
 
             _hasher.Received(1).Hash(command.Senha);
             await _repository.Received(1).AdicionarAsync(

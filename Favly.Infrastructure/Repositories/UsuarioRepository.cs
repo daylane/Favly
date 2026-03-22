@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Favly.Infrastructure.Repositories
 {
-    public class UusarioRepository(FavlyDbContext _context) : IUsuarioRepository
+    public class UsuarioRepository(FavlyDbContext _context) : IUsuarioRepository
     {
 
         public async Task<Usuario?> ObterPorIdAsync(Guid id, CancellationToken ct = default) =>

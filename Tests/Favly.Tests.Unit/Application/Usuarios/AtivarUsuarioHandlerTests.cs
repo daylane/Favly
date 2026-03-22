@@ -16,24 +16,24 @@ namespace Favly.Tests.Unit.Application.Usuarios
         public async Task Handle_ComDadosValidos_DeveAtivareERetornarUsuario()
         {
             var usuario = UsuarioFaker.CriarValido();
-            var command = UsuarioFaker.AtivarUsuarioCommand(usuario.Id, usuario.CodigoAtivacao);
+            var command = UsuarioFaker.AtivarUsuarioCommand(usuario.Email.EnderecoEmail, usuario.CodigoAtivacao);
 
-            _repository.ObterPorIdAsync(command.UsuarioId, default).Returns(usuario);
+            _repository.ObterPorEmailAsync(command.Email, default).Returns(usuario);
 
             var result = await AtivarUsuarioHandler.Handle(command, _repository, default);
 
             result.Should().BeTrue();
 
             _repository.Received(1).Atualizar(
-                Arg.Is<Usuario>(u => u.Id == command.UsuarioId));
+                Arg.Is<Usuario>(u => u.Email.EnderecoEmail == command.Email));
         }
 
         [Fact]
         public async Task Handle_ComGuidInvalido_DeveLancarNotFoundException()
         {
-            var command = UsuarioFaker.AtivarUsuarioCommand(Guid.NewGuid(), "CODIGO-ERRADO");
+            var command = UsuarioFaker.AtivarUsuarioCommand("email@email.com", "CODIGO-ERRADO");
 
-            _repository.ObterPorIdAsync(command.UsuarioId, default).Returns((Usuario?)null);
+            _repository.ObterPorEmailAsync(command.Email, default).Returns((Usuario?)null);
 
             var act = async () => await AtivarUsuarioHandler.Handle(command, _repository, default);
 
