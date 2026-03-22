@@ -16,6 +16,16 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Development", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddApplicationServices();                        
 builder.Services.AddInfrastructureServices();                   
 builder.Services.AddApiServices(builder.Configuration);
@@ -63,11 +73,15 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Favly v1");
         options.RoutePrefix = string.Empty;
     });
+    app.UseCors("Development");
+}
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication(); 
 app.UseAuthorization();  
