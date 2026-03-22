@@ -2,16 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Wolverine;
 using Wolverine.Runtime;
 
 namespace Favly.Infrastructure.Extensions
 {
-    public class UnitOfWorkMiddleware
+    public class UnitOfWorkMiddleware(IUnitOfWork _uow, IMessageBus _bus)
     {
-        private readonly IUnitOfWork _uow;
-
-        public UnitOfWorkMiddleware(IUnitOfWork uow) => _uow = uow;
-
         public async Task AfterAsync(CancellationToken ct)
         {
             await _uow.CommitAsync(ct);

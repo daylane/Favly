@@ -13,7 +13,7 @@ namespace Favly.Application.Usuarios.Commands.AtivarUsuario
                IUsuarioRepository repository,
                CancellationToken ct)
         {
-            var usuario = await repository.ObterPorIdAsync(command.UsuarioId, ct);
+            var usuario = await repository.ObterPorEmailAsync(command.Email, ct);
 
             NotFoundException.When(usuario is null, "Usuário não encontrado.");
 

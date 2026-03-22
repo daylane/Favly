@@ -4,5 +4,5 @@ using System.Text;
 
 namespace Favly.Application.Usuarios.Commands.AtivarUsuario
 {
-    public record AtivarUsuarioCommand(Guid UsuarioId, string CodigoAtivacao);
+    public record AtivarUsuarioCommand(string Email, string CodigoAtivacao);
 }

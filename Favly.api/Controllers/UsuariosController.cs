@@ -24,13 +24,13 @@ namespace Favly.api.Controllers
             return CreatedAtAction(nameof(ObterPorId), new { id = result.Id }, result);
         }
 
-        [HttpPost("{id:guid}/ativar")]
+        [HttpPost("{email}/ativar")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Ativar(Guid id, [FromBody] AtivarContaRequest request, CancellationToken ct)
+        public async Task<IActionResult> Ativar(string email, [FromBody] AtivarContaRequest request, CancellationToken ct)
         {
-            await _bus.InvokeAsync(new AtivarUsuarioCommand(id, request.Codigo), ct);
+            await _bus.InvokeAsync(new AtivarUsuarioCommand(email, request.Codigo), ct);
             return NoContent();
         }
 
