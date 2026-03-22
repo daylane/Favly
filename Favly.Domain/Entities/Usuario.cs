@@ -81,6 +81,17 @@ namespace Favly.Domain.Entities
             AddDomainEvent(new UsuarioDesativadoEvent(Id));
         }
 
+        public void GerarCodigo()
+        {
+            Guard.Against<DomainException>(Ativo, "Usuário já está ativo.");
+
+            CodigoAtivacao = Guid.NewGuid().ToString("N")[..8].ToUpper();
+            AtualizarDataAtualizacao();
+
+            AddDomainEvent(new CodigoAtivacaoReenviadoEvent(Id));
+        }
+
+
         public bool ValidarSenha(string hash) => Hash == hash;
     }
 }
