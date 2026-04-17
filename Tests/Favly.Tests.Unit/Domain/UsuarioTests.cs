@@ -92,6 +92,40 @@ namespace Favly.Tests.Unit.Domain
                 .WithMessage("*já está ativo*");
         }
 
+        [Fact]
+        public void GerarCodigo_UsuarioInativo_DeveGerarNovoCodigo()
+        {
+            var usuario = UsuarioFaker.CriarValido();
+            var codigoAntigo = usuario.CodigoAtivacao;
+
+            usuario.GerarCodigo();
+
+            usuario.CodigoAtivacao.Should().NotBe(codigoAntigo);
+            usuario.CodigoAtivacao.Should().HaveLength(8);
+        }
+
+        [Fact]
+        public void GerarCodigo_UsuarioAtivo_DeveLancarDomainException()
+        {
+            var usuario = UsuarioFaker.CriarAtivo();
+
+            var act = () => usuario.GerarCodigo();
+
+            act.Should().Throw<DomainException>()
+                .WithMessage("*já está ativo*");
+        }
+
+        [Fact]
+        public void GerarCodigo_DeveEmitirCodigoAtivacaoReenviadoEvent()
+        {
+            var usuario = UsuarioFaker.CriarValido();
+
+            usuario.GerarCodigo();
+
+            usuario.DomainEvents.Should().ContainSingle(e =>
+                e.GetType().Name == "CodigoAtivacaoReenviadoEvent");
+        }
+
         // ── Atualizar ──────────────────────────────────────────────────────
 
         [Fact]

@@ -2,6 +2,7 @@
 using Favly.Application.Usuarios.Commands.AtualizarUsuario;
 using Favly.Application.Usuarios.Commands.CriarUsuario;
 using Favly.Application.Usuarios.Commands.DesativarUsuario;
+using Favly.Application.Usuarios.Commands.ReenviarCodigoAtivacao;
 using Favly.Application.Usuarios.DTOs;
 using Favly.Application.Usuarios.Queries.ObterUsuarioPorId;
 using Microsoft.AspNetCore.Authorization;
@@ -33,7 +34,18 @@ namespace Favly.api.Controllers
             await _bus.InvokeAsync(new AtivarUsuarioCommand(email, request.Codigo), ct);
             return NoContent();
         }
-
+        /// <summary>Reenvia o código de ativação para o e-mail</summary>
+        [HttpPost("reenviar-ativacao")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ReenviarCodigoAtivacao(
+            [FromBody] ReenviarCodigoAtivacaoCommand command,
+            CancellationToken ct)
+        {
+            await _bus.InvokeAsync(command, ct);
+            return NoContent();
+        }
         [HttpGet("{id:guid}")]
         [Authorize]
         [ProducesResponseType(typeof(UsuarioResponse), StatusCodes.Status200OK)]
