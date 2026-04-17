@@ -18,6 +18,7 @@ namespace Favly.Infrastructure.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Convite> Convites { get; set; }
         public DbSet<Membro> Membros { get; set; }
+        public DbSet<TokenResetSenha> TokensResetSenha => Set<TokenResetSenha>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
