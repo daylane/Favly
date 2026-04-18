@@ -15,5 +15,7 @@ namespace Favly.Application.Abstractions.Persistence
 
         Task AtualizarAsync(Grupo grupo,
             CancellationToken cancellationToken = default);
+        Task<IEnumerable<(string Email, string Nome)>> ObterEmailsDoGrupoAsync(Guid grupoId, CancellationToken ct = default);
+
     }
 }

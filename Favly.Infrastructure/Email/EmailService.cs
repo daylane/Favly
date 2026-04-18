@@ -104,6 +104,11 @@ namespace Favly.Infrastructure.Email
             </body>
             </html>
             """;
+
+        public Task EnviarAlertaEstoqueBaixoAsync(string email, string nome, string nomeProduto, decimal quantidadeAtual, decimal quantidadeMinima, CancellationToken ct = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
