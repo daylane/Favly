@@ -1,4 +1,13 @@
-﻿namespace Favly.api.Controllers
+﻿using Favly.Application.Produtos.Commands.AtualizarProduto;
+using Favly.Application.Produtos.Commands.CriarProduto;
+using Favly.Application.Produtos.Commands.RemoverProduto;
+using Favly.Application.Produtos.DTOs;
+using Favly.Application.Produtos.Queries.ListarProdutos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Wolverine;
+
+namespace Favly.api.Controllers
 {
     [ApiController]
     [Authorize]
