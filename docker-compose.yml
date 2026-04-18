@@ -34,5 +34,3 @@ services:
 
 volumes:
   favly_data:
-
-  dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=favly_db;Username=postgres;Password=docker178;SSL Mode=Disable" --project Favly.api
