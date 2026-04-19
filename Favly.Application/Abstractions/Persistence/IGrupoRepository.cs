@@ -10,11 +10,13 @@ namespace Favly.Application.Abstractions.Persistence
         Task<Grupo?> ObterPorIdAsync (Guid grupoId,
             CancellationToken cancellationToken = default);
 
+        Task<Grupo?> ObterGrupoPorUsuarioIdAsync(Guid usuarioId,
+           CancellationToken cancellationToken = default);
+
         Task AdicionarAsync(Grupo grupo,
             CancellationToken cancellationToken = default);
 
-        Task AtualizarAsync(Grupo grupo,
-            CancellationToken cancellationToken = default);
+        void AtualizarAsync(Grupo grupo);
         Task<IEnumerable<(string Email, string Nome)>> ObterEmailsDoGrupoAsync(Guid grupoId, CancellationToken ct = default);
 
     }

@@ -8,5 +8,7 @@ namespace Favly.Application.Auth.DTOs
       string Token,
       string Nome,
       string Email,
+      Guid GrupoId,        
+      string GrupoNome,   
       DateTime Expiracao);
 }
