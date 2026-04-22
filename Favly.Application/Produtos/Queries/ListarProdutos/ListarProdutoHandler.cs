@@ -8,7 +8,7 @@ using System.Text;
 namespace Favly.Application.Produtos.Queries.ListarProdutos
 {
   
-    public class ListarProdutoHandlers
+    public class ListarProdutoHandler
     {
         public static async Task<IEnumerable<ProdutoResponse>> Handle(
             ListarProdutosQuery query,

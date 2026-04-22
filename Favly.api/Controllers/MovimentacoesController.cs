@@ -3,6 +3,8 @@ using Favly.Application.Movimentacoes.Commands.RegistrarSaida;
 using Favly.Application.Movimentacoes.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Wolverine;
 
 namespace Favly.api.Controllers
@@ -13,15 +15,18 @@ namespace Favly.api.Controllers
     public class MovimentacoesController(IMessageBus _bus) : ControllerBase
     {
         [HttpPost("entrada")]
-        [ProducesResponseType(typeof(MovimentacaoResponse), StatusCodes.Status201Created)]
         public async Task<IActionResult> RegistrarEntrada(
-            Guid grupoId, [FromBody] RegistrarEntradaRequest request, CancellationToken ct)
+    Guid grupoId, [FromBody] RegistrarEntradaRequest request, CancellationToken ct)
         {
+            // Pega o Id do usuário logado direto do token JWT
+            var usuarioId = Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+
             var result = await _bus.InvokeAsync<MovimentacaoResponse>(
                 new RegistrarEntradaCommand(
-                    grupoId, request.ProdutoId, request.MembroId,
+                    grupoId, request.ProdutoId, usuarioId, // ← vem do token, não do body
                     request.Quantidade, request.Preco, request.MercadoId, request.Observacao), ct);
-            return Created($"api/grupos/{grupoId}/movimentacoes/{result.Id}", result);
+
+            return CreatedAtAction(nameof(MovimentacaoResponse), new { grupoId }, result);
         }
 
         [HttpPost("saida")]
