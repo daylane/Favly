@@ -1,7 +1,5 @@
-﻿using Favly.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Favly.Domain.Common.Enums;
+using Favly.Domain.Entities;
 
 namespace Favly.Application.Abstractions.Persistence
 {
@@ -25,11 +23,14 @@ namespace Favly.Application.Abstractions.Persistence
         Task<IEnumerable<Grupo>> ListarGruposDoUsuarioAsync(Guid usuarioId,
             CancellationToken ct = default);
 
+        Task<IEnumerable<(Guid MembroId, Guid UsuarioId, string NomeUsuario, string Avatar, string Apelido, PapelMembro Role, DateTime DataEntrada)>> ObterMembrosComUsuariosAsync(
+            Guid grupoId, CancellationToken ct = default);
+
         Task AdicionarAsync(Grupo grupo,
             CancellationToken cancellationToken = default);
 
         void AtualizarAsync(Grupo grupo);
-        Task<IEnumerable<(string Email, string Nome)>> ObterEmailsDoGrupoAsync(Guid grupoId, CancellationToken ct = default);
 
+        Task<IEnumerable<(string Email, string Nome)>> ObterEmailsDoGrupoAsync(Guid grupoId, CancellationToken ct = default);
     }
 }

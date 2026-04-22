@@ -1,4 +1,4 @@
-﻿using Favly.Domain.Common.Enums;
+using Favly.Domain.Common.Enums;
 using Favly.Domain.Entities;
 using Favly.Domain.Interfaces;
 using Favly.Infrastructure.Data;
@@ -53,5 +53,36 @@ namespace Favly.Infrastructure.Repositories
 
             return resultado is null ? (null, null) : (resultado.MercadoId, resultado.Media);
         }
+
+        public async Task<IEnumerable<(Guid CategoriaId, decimal TotalGasto)>> ObterGastosPorCategoriaAsync(Guid grupoId, CancellationToken ct = default)
+            => await _context.Movimentacoes
+                .Where(m => m.GrupoId == grupoId
+                         && m.Tipo == TipoMovimentacao.Entrada
+                         && m.Preco != null)
+                .Join(_context.Produtos,
+                    m => m.ProdutoId,
+                    p => p.Id,
+                    (m, p) => new { p.CategoriaId, Gasto = m.Quantidade * m.Preco!.Value })
+                .GroupBy(x => x.CategoriaId)
+                .Select(g => ValueTuple.Create(g.Key, g.Sum(x => x.Gasto)))
+                .ToListAsync(ct);
+
+        public async Task<IEnumerable<(Guid MercadoId, decimal TotalGasto, int TotalCompras)>> ObterRankingMercadosAsync(Guid grupoId, CancellationToken ct = default)
+            => await _context.Movimentacoes
+                .Where(m => m.GrupoId == grupoId
+                         && m.Tipo == TipoMovimentacao.Entrada
+                         && m.Preco != null
+                         && m.MercadoId != null)
+                .GroupBy(m => m.MercadoId!.Value)
+                .Select(g => new { MercadoId = g.Key, TotalGasto = g.Sum(m => m.Quantidade * m.Preco!.Value), TotalCompras = g.Count() })
+                .OrderByDescending(x => x.TotalGasto)
+                .Select(x => ValueTuple.Create(x.MercadoId, x.TotalGasto, x.TotalCompras))
+                .ToListAsync(ct);
+
+        public async Task<Movimentacao?> ObterUltimaEntradaAsync(Guid grupoId, CancellationToken ct = default)
+            => await _context.Movimentacoes
+                .Where(m => m.GrupoId == grupoId && m.Tipo == TipoMovimentacao.Entrada && m.Preco != null)
+                .OrderByDescending(m => m.DataCriacao)
+                .FirstOrDefaultAsync(ct);
     }
 }

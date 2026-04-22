@@ -1,6 +1,7 @@
 using Favly.Application.Movimentacoes.Commands.RegistrarEntrada;
 using Favly.Application.Movimentacoes.Commands.RegistrarSaida;
 using Favly.Application.Movimentacoes.DTOs;
+using Favly.Application.Movimentacoes.Queries.ListarMovimentacoes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,6 +16,20 @@ namespace Favly.api.Controllers
     public class MovimentacoesController(IMessageBus _bus) : ControllerBase
     {
         private Guid UsuarioId => Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<MovimentacaoResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Listar(
+            Guid grupoId,
+            [FromQuery] Guid? produtoId,
+            [FromQuery] int pagina = 1,
+            [FromQuery] int tamanho = 20,
+            CancellationToken ct = default)
+        {
+            var result = await _bus.InvokeAsync<IEnumerable<MovimentacaoResponse>>(
+                new ListarMovimentacoesQuery(grupoId, UsuarioId, produtoId, pagina, tamanho), ct);
+            return Ok(result);
+        }
 
         [HttpPost("entrada")]
         [ProducesResponseType(typeof(MovimentacaoResponse), StatusCodes.Status201Created)]

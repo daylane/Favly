@@ -1,20 +1,17 @@
-﻿using Favly.Application.Abstractions.Persistence;
+using Favly.Application.Abstractions.Persistence;
+using Favly.Domain.Common.Enums;
 using Favly.Domain.Entities;
 using Favly.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Favly.Infrastructure.Repositories
 {
     public class GrupoRepository(FavlyDbContext _context) : IGrupoRepository
     {
         public async Task AdicionarAsync(Grupo grupo, CancellationToken cancellationToken = default)
-
             => await _context.Grupos.AddAsync(grupo, cancellationToken);
 
-        public void  AtualizarAsync(Grupo grupo)
+        public void AtualizarAsync(Grupo grupo)
             => _context.Grupos.Update(grupo);
 
         public async Task<IEnumerable<(string Email, string Nome)>> ObterEmailsDoGrupoAsync(Guid grupoId, CancellationToken ct = default)
@@ -27,9 +24,27 @@ namespace Favly.Infrastructure.Repositories
                 .Select(x => ValueTuple.Create(x.Email, x.Nome))
                 .ToListAsync(ct);
 
+        public async Task<IEnumerable<(Guid MembroId, Guid UsuarioId, string NomeUsuario, string Avatar, string Apelido, PapelMembro Role, DateTime DataEntrada)>> ObterMembrosComUsuariosAsync(
+            Guid grupoId, CancellationToken ct = default)
+            => await _context.Membros
+                .Where(m => m.FamiliaId == grupoId)
+                .Join(_context.Usuarios,
+                    m => m.UsuarioId,
+                    u => u.Id,
+                    (m, u) => new
+                    {
+                        MembroId = m.Id,
+                        m.UsuarioId,
+                        NomeUsuario = u.Nome,
+                        u.Avatar,
+                        m.Apelido,
+                        m.Role,
+                        DataEntrada = m.DataCriacao
+                    })
+                .Select(x => ValueTuple.Create(x.MembroId, x.UsuarioId, x.NomeUsuario, x.Avatar, x.Apelido, x.Role, x.DataEntrada))
+                .ToListAsync(ct);
 
         public async Task<Grupo?> ObterGrupoPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default)
-
             => await _context.Grupos.Where(x => x.Membros.Any(x => x.UsuarioId == usuarioId)).FirstAsync();
 
         public Task<Grupo?> ObterPorIdAsync(Guid grupoId, CancellationToken cancellationToken = default)
@@ -43,6 +58,7 @@ namespace Favly.Infrastructure.Repositories
 
         public async Task<IEnumerable<Grupo>> ListarGruposDoUsuarioAsync(Guid usuarioId, CancellationToken ct = default)
             => await _context.Grupos
+                .Include(g => g.Membros)
                 .Where(g => g.Membros.Any(m => m.UsuarioId == usuarioId))
                 .ToListAsync(ct);
 
