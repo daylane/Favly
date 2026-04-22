@@ -105,10 +105,53 @@ namespace Favly.Infrastructure.Email
             </html>
             """;
 
-        public Task EnviarAlertaEstoqueBaixoAsync(string email, string nome, string nomeProduto, decimal quantidadeAtual, decimal quantidadeMinima, CancellationToken ct = default)
+        public async Task EnviarAlertaEstoqueBaixoAsync(string email, string nome, string nomeProduto,
+            decimal quantidadeAtual, decimal quantidadeMinima, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            var host = _configuration["Email:Host"] ?? throw new InvalidOperationException("Email:Host não configurado.");
+            var port = int.Parse(_configuration["Email:Port"] ?? "587");
+            var conta = _configuration["Email:Conta"] ?? throw new InvalidOperationException("Email:Conta não configurado.");
+            var senha = _configuration["Email:Senha"] ?? throw new InvalidOperationException("Email:Senha não configurado.");
+            var nomeRemetente = _configuration["Email:NomeRemetente"] ?? "Favly";
+
+            var mensagem = new MimeMessage();
+            mensagem.From.Add(new MailboxAddress(nomeRemetente, conta));
+            mensagem.To.Add(new MailboxAddress(nome, email));
+            mensagem.Subject = $"Estoque baixo: {nomeProduto}";
+            mensagem.Body = new TextPart("html")
+            {
+                Text = GerarCorpoAlertaEstoque(nome, nomeProduto, quantidadeAtual, quantidadeMinima)
+            };
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(host, port, SecureSocketOptions.Auto, ct);
+            await client.AuthenticateAsync(conta, senha, ct);
+            await client.SendAsync(mensagem, ct);
+            await client.DisconnectAsync(true, ct);
+
+            _logger.LogInformation("Alerta de estoque baixo enviado para {Email} — produto: {Produto}", email, nomeProduto);
         }
+
+        private static string GerarCorpoAlertaEstoque(string nome, string nomeProduto,
+            decimal quantidadeAtual, decimal quantidadeMinima) => $"""
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #333;">Olá, {nome}! 👋</h2>
+                <p>Um produto do seu grupo está com <strong>estoque baixo</strong>:</p>
+                <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; border-radius: 4px; margin: 20px 0;">
+                    <h3 style="margin: 0 0 8px 0; color: #856404;">{nomeProduto}</h3>
+                    <p style="margin: 0; color: #856404;">
+                        Quantidade atual: <strong>{quantidadeAtual}</strong> &nbsp;|&nbsp;
+                        Mínimo configurado: <strong>{quantidadeMinima}</strong>
+                    </p>
+                </div>
+                <p>Lembre-se de reabastecer para manter o controle do seu estoque em dia.</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+                <p style="color: #999; font-size: 12px;">Favly — Controle de estoque familiar</p>
+            </body>
+            </html>
+            """;
     }
 }
 
