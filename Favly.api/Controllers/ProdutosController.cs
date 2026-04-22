@@ -2,6 +2,7 @@ using Favly.Application.Produtos.Commands.AtualizarProduto;
 using Favly.Application.Produtos.Commands.CriarProduto;
 using Favly.Application.Produtos.Commands.RemoverProduto;
 using Favly.Application.Produtos.DTOs;
+using Favly.Application.Produtos.Queries.EstatisticasProduto;
 using Favly.Application.Produtos.Queries.ListarProdutos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,15 @@ namespace Favly.api.Controllers
         {
             var result = await _bus.InvokeAsync<IEnumerable<ProdutoResponse>>(
                 new ListarEstoqueBaixoQuery(grupoId, UsuarioId), ct);
+            return Ok(result);
+        }
+
+        [HttpGet("{id:guid}/estatisticas")]
+        [ProducesResponseType(typeof(EstatisticasProdutoResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ObterEstatisticas(Guid grupoId, Guid id, CancellationToken ct)
+        {
+            var result = await _bus.InvokeAsync<EstatisticasProdutoResponse>(
+                new EstatisticasProdutoQuery(grupoId, UsuarioId, id), ct);
             return Ok(result);
         }
 
