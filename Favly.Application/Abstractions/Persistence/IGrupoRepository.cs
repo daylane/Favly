@@ -16,6 +16,15 @@ namespace Favly.Application.Abstractions.Persistence
         Task<bool> UsuarioEhMembroAsync(Guid grupoId, Guid usuarioId,
             CancellationToken ct = default);
 
+        Task<Grupo?> ObterPorIdComMembrosAsync(Guid grupoId,
+            CancellationToken ct = default);
+
+        Task<Grupo?> ObterPorCodigoConviteAsync(string codigo,
+            CancellationToken ct = default);
+
+        Task<IEnumerable<Grupo>> ListarGruposDoUsuarioAsync(Guid usuarioId,
+            CancellationToken ct = default);
+
         Task AdicionarAsync(Grupo grupo,
             CancellationToken cancellationToken = default);
 

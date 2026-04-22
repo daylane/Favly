@@ -30,6 +30,17 @@ namespace Favly.Infrastructure.Repositories
         public Task<Grupo?> ObterPorIdAsync(Guid grupoId, CancellationToken cancellationToken = default)
             => _context.Grupos.FirstOrDefaultAsync(g => g.Id == grupoId, cancellationToken);
 
+        public Task<Grupo?> ObterPorIdComMembrosAsync(Guid grupoId, CancellationToken ct = default)
+            => _context.Grupos.Include(g => g.Membros).FirstOrDefaultAsync(g => g.Id == grupoId, ct);
+
+        public Task<Grupo?> ObterPorCodigoConviteAsync(string codigo, CancellationToken ct = default)
+            => _context.Grupos.Include(g => g.Membros).FirstOrDefaultAsync(g => g.Convite == codigo, ct);
+
+        public async Task<IEnumerable<Grupo>> ListarGruposDoUsuarioAsync(Guid usuarioId, CancellationToken ct = default)
+            => await _context.Grupos
+                .Where(g => g.Membros.Any(m => m.UsuarioId == usuarioId))
+                .ToListAsync(ct);
+
         public Task<bool> UsuarioEhMembroAsync(Guid grupoId, Guid usuarioId, CancellationToken ct = default)
             => _context.Membros.AnyAsync(m => m.FamiliaId == grupoId && m.UsuarioId == usuarioId, ct);
     }
