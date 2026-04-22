@@ -1,18 +1,14 @@
-﻿using Favly.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Favly.Domain.Entities;
 
 namespace Favly.Application.Usuarios.DTOs
 {
     public record UsuarioResponse(
-      Guid Id,
-      string Nome,
-      string Email,
-      string Avatar,
-      bool Ativo,
-      DateTime DataCriacao,
-      string CodigoAtivacao)
+        Guid Id,
+        string Nome,
+        string Email,
+        string Avatar,
+        bool Ativo,
+        DateTime DataCriacao)
     {
         public static UsuarioResponse FromEntity(Usuario usuario) => new(
             usuario.Id,
@@ -20,7 +16,6 @@ namespace Favly.Application.Usuarios.DTOs
             usuario.Email.EnderecoEmail,
             usuario.Avatar,
             usuario.Ativo,
-            usuario.DataCriacao,
-            usuario.CodigoAtivacao);
+            usuario.DataCriacao);
     }
 }
