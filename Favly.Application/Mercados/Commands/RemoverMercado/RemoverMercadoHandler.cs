@@ -1,8 +1,6 @@
-﻿using Favly.Domain.Common.Exceptions;
+using Favly.Application.Abstractions.Persistence;
+using Favly.Domain.Common.Exceptions;
 using Favly.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Favly.Application.Mercados.Commands.RemoverMercado
 {
@@ -11,9 +9,13 @@ namespace Favly.Application.Mercados.Commands.RemoverMercado
         public static async Task Handle(
             RemoverMercadoCommand command,
             IMercadoRepository repository,
+            IGrupoRepository grupoRepository,
             IUnitOfWork uow,
             CancellationToken ct)
         {
+            var ehMembro = await grupoRepository.UsuarioEhMembroAsync(command.GrupoId, command.UsuarioId, ct);
+            AcessoNegadoException.When(!ehMembro, "Você não é membro deste grupo.");
+
             var mercado = await repository.ObterPorIdAsync(command.MercadoId, ct);
             NotFoundException.When(mercado is null, "Mercado não encontrado.");
 

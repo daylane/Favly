@@ -1,10 +1,8 @@
 using Favly.Domain.Common.Enums;
 
-namespace Favly.Application.Produtos.Commands.CriarProduto
+namespace Favly.Application.Produtos.DTOs
 {
-    public record CriarProdutoCommand(
-        Guid GrupoId,
-        Guid UsuarioId,
+    public record CriarProdutoRequest(
         Guid CategoriaId,
         string Nome,
         UnidadeMedida Unidade,

@@ -36,6 +36,11 @@ namespace Favly.api.Middleware
                     ex.Message,
                     (IEnumerable<string>?)null),
 
+                AcessoNegadoException ex => (
+                    HttpStatusCode.Forbidden,
+                    ex.Message,
+                    (IEnumerable<string>?)null),
+
                 _ => (
                     HttpStatusCode.InternalServerError,
                     "Erro interno no servidor. Tente novamente mais tarde.",

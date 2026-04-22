@@ -28,8 +28,9 @@ namespace Favly.Infrastructure.Repositories
             => await _context.Grupos.Where(x => x.Membros.Any(x => x.UsuarioId == usuarioId)).FirstAsync();
 
         public Task<Grupo?> ObterPorIdAsync(Guid grupoId, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+            => _context.Grupos.FirstOrDefaultAsync(g => g.Id == grupoId, cancellationToken);
+
+        public Task<bool> UsuarioEhMembroAsync(Guid grupoId, Guid usuarioId, CancellationToken ct = default)
+            => _context.Membros.AnyAsync(m => m.FamiliaId == grupoId && m.UsuarioId == usuarioId, ct);
     }
 }

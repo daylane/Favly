@@ -1,9 +1,7 @@
-﻿using Favly.Application.Categorias.DTOs;
+using Favly.Application.Abstractions.Persistence;
+using Favly.Application.Categorias.DTOs;
 using Favly.Domain.Common.Exceptions;
 using Favly.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Favly.Application.Categorias.Commands.AtualizarCategoria
 {
@@ -12,9 +10,13 @@ namespace Favly.Application.Categorias.Commands.AtualizarCategoria
         public static async Task<CategoriaResponse> Handle(
             AtualizarCategoriaCommand command,
             ICategoriaRepository repository,
+            IGrupoRepository grupoRepository,
             IUnitOfWork uow,
             CancellationToken ct)
         {
+            var ehMembro = await grupoRepository.UsuarioEhMembroAsync(command.GrupoId, command.UsuarioId, ct);
+            AcessoNegadoException.When(!ehMembro, "Você não é membro deste grupo.");
+
             var categoria = await repository.ObterPorIdAsync(command.CategoriaId, ct);
             NotFoundException.When(categoria is null, "Categoria não encontrada.");
 

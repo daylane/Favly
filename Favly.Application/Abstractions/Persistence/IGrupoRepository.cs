@@ -7,11 +7,14 @@ namespace Favly.Application.Abstractions.Persistence
 {
     public interface IGrupoRepository
     {
-        Task<Grupo?> ObterPorIdAsync (Guid grupoId,
+        Task<Grupo?> ObterPorIdAsync(Guid grupoId,
             CancellationToken cancellationToken = default);
 
         Task<Grupo?> ObterGrupoPorUsuarioIdAsync(Guid usuarioId,
            CancellationToken cancellationToken = default);
+
+        Task<bool> UsuarioEhMembroAsync(Guid grupoId, Guid usuarioId,
+            CancellationToken ct = default);
 
         Task AdicionarAsync(Grupo grupo,
             CancellationToken cancellationToken = default);

@@ -1,10 +1,8 @@
-﻿using Favly.Application.Movimentacoes.DTOs;
+using Favly.Application.Abstractions.Persistence;
+using Favly.Application.Movimentacoes.DTOs;
 using Favly.Domain.Common.Exceptions;
 using Favly.Domain.Entities;
 using Favly.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Wolverine;
 
 namespace Favly.Application.Movimentacoes.Commands.RegistrarEntrada
@@ -15,10 +13,14 @@ namespace Favly.Application.Movimentacoes.Commands.RegistrarEntrada
             RegistrarEntradaCommand command,
             IProdutoRepository produtoRepository,
             IMovimentacaoRepository movimentacaoRepository,
+            IGrupoRepository grupoRepository,
             IUnitOfWork uow,
             IMessageBus bus,
             CancellationToken ct)
         {
+            var ehMembro = await grupoRepository.UsuarioEhMembroAsync(command.GrupoId, command.MembroId, ct);
+            AcessoNegadoException.When(!ehMembro, "Você não é membro deste grupo.");
+
             var produto = await produtoRepository.ObterPorIdAsync(command.ProdutoId, ct);
             NotFoundException.When(produto is null, "Produto não encontrado.");
 

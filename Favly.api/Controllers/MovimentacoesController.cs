@@ -1,4 +1,4 @@
-﻿using Favly.Application.Movimentacoes.Commands.RegistrarEntrada;
+using Favly.Application.Movimentacoes.Commands.RegistrarEntrada;
 using Favly.Application.Movimentacoes.Commands.RegistrarSaida;
 using Favly.Application.Movimentacoes.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -14,19 +14,19 @@ namespace Favly.api.Controllers
     [Route("api/grupos/{grupoId:guid}/movimentacoes")]
     public class MovimentacoesController(IMessageBus _bus) : ControllerBase
     {
-        [HttpPost("entrada")]
-        public async Task<IActionResult> RegistrarEntrada(
-    Guid grupoId, [FromBody] RegistrarEntradaRequest request, CancellationToken ct)
-        {
-            // Pega o Id do usuário logado direto do token JWT
-            var usuarioId = Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+        private Guid UsuarioId => Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
 
+        [HttpPost("entrada")]
+        [ProducesResponseType(typeof(MovimentacaoResponse), StatusCodes.Status201Created)]
+        public async Task<IActionResult> RegistrarEntrada(
+            Guid grupoId, [FromBody] RegistrarEntradaRequest request, CancellationToken ct)
+        {
             var result = await _bus.InvokeAsync<MovimentacaoResponse>(
                 new RegistrarEntradaCommand(
-                    grupoId, request.ProdutoId, usuarioId, // ← vem do token, não do body
+                    grupoId, request.ProdutoId, UsuarioId,
                     request.Quantidade, request.Preco, request.MercadoId, request.Observacao), ct);
 
-            return CreatedAtAction(nameof(MovimentacaoResponse), new { grupoId }, result);
+            return CreatedAtAction(nameof(RegistrarEntrada), new { grupoId }, result);
         }
 
         [HttpPost("saida")]
@@ -36,10 +36,9 @@ namespace Favly.api.Controllers
         {
             var result = await _bus.InvokeAsync<MovimentacaoResponse>(
                 new RegistrarSaidaCommand(
-                    grupoId, request.ProdutoId, request.MembroId,
+                    grupoId, request.ProdutoId, UsuarioId,
                     request.Quantidade, request.Observacao), ct);
             return Created($"api/grupos/{grupoId}/movimentacoes/{result.Id}", result);
         }
     }
-
 }
