@@ -35,6 +35,7 @@ namespace Favly.api.Extensions
             })
             .AddJwtBearer(options =>
             {
+                options.MapInboundClaims = false;
                 options.RequireHttpsMetadata = false; // mudar para true em produção
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters

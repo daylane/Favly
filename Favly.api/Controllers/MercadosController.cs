@@ -16,7 +16,7 @@ namespace Favly.api.Controllers
     [Route("api/grupos/{grupoId:guid}/mercados")]
     public class MercadosController(IMessageBus _bus) : ControllerBase
     {
-        private Guid UsuarioId => Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+        private Guid UsuarioId => Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Jti)!);
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<MercadoResponse>), StatusCodes.Status200OK)]
