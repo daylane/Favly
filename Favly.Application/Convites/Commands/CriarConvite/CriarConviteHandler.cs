@@ -13,17 +13,27 @@ namespace Favly.Application.Convites.Commands.CriarConvite
             CriarConviteCommand command,
             IConviteRepository conviteRepository,
             IGrupoRepository grupoRepository,
+            IEmailService emailService,
             IUnitOfWork uow,
             CancellationToken ct)
         {
             var ehMembro = await grupoRepository.UsuarioEhMembroAsync(command.GrupoId, command.UsuarioId, ct);
             AcessoNegadoException.When(!ehMembro, "Você não é membro deste grupo.");
 
+            var grupo = await grupoRepository.ObterPorIdAsync(command.GrupoId, ct);
+            NotFoundException.When(grupo is null, "Grupo não encontrado.");
+
             var emailConvidado = EmailUsuario.Criar(command.EmailConvidado);
             var convite = new Convite(command.GrupoId, emailConvidado);
 
             await conviteRepository.AdicionarAsync(convite, ct);
             await uow.CommitAsync(ct);
+
+            await emailService.EnviarConviteAsync(
+                email: emailConvidado.EnderecoEmail,
+                grupoNome: grupo!.Nome,
+                codigo: convite.Codigo,
+                ct: ct);
 
             return ConviteResponse.FromEntity(convite);
         }

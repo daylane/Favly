@@ -1,4 +1,4 @@
 namespace Favly.Application.Convites.DTOs
 {
-    public record AceitarConviteRequest(string Codigo, string Apelido);
+    public record AceitarConviteRequest(string Apelido);
 }
