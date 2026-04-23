@@ -50,6 +50,13 @@ namespace Favly.Domain.Entities
             DataAtualizacao = DateTime.UtcNow;
         }
 
+        public void Remover()
+        {
+            ValidarSePodeMudarEstado();
+            Status = StatusConvite.Removido;
+            DataAtualizacao = DateTime.UtcNow;
+        }
+
         public void Expirar()
         {
             if (Status == StatusConvite.Pendente && DateTime.UtcNow > DataExpiracao)

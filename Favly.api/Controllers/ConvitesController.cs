@@ -1,6 +1,7 @@
 using Favly.Application.Convites.Commands.AceitarConvite;
 using Favly.Application.Convites.Commands.CriarConvite;
 using Favly.Application.Convites.Commands.RegistrarEAceitarConvite;
+using Favly.Application.Convites.Commands.RemoverConvite;
 using Favly.Application.Convites.DTOs;
 using Favly.Application.Convites.Queries.ListarConvites;
 using Favly.Application.Convites.Queries.ObterConvite;
@@ -46,6 +47,16 @@ namespace Favly.api.Controllers
             return Created($"api/grupos/{grupoId}/convites/{result.Id}", result);
         }
 
+
+        [HttpPut("api/grupos/{grupoId:guid}/convites/{conviteId:guid}")]
+        [ProducesResponseType(typeof(ConviteResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> Remover(Guid grupoId, Guid conviteId, CancellationToken ct)
+        {
+            var result = await _bus.InvokeAsync<ConviteResponse>(
+                new RemoverConviteCommand(grupoId, conviteId), ct);
+            return Ok(result);
+        }
         // ── Aceitação — usuário JÁ CADASTRADO (precisa estar logado) ─────────
 
         /// <summary>
