@@ -1,4 +1,5 @@
 using Favly.Application.Abstractions.Persistence;
+using Favly.Application.Grupos.DTOs;
 using Favly.Domain.Common.Enums;
 using Favly.Domain.Entities;
 using Favly.Infrastructure.Data;
@@ -24,25 +25,23 @@ namespace Favly.Infrastructure.Repositories
                 .Select(x => ValueTuple.Create(x.Email, x.Nome))
                 .ToListAsync(ct);
 
-        public async Task<IEnumerable<(Guid MembroId, Guid UsuarioId, string NomeUsuario, string Avatar, string Apelido, PapelMembro Role, DateTime DataEntrada)>> ObterMembrosComUsuariosAsync(
-            Guid grupoId, CancellationToken ct = default)
-            => await _context.Membros
-                .Where(m => m.FamiliaId == grupoId)
-                .Join(_context.Usuarios,
-                    m => m.UsuarioId,
-                    u => u.Id,
-                    (m, u) => new
-                    {
-                        MembroId = m.Id,
-                        m.UsuarioId,
-                        NomeUsuario = u.Nome,
-                        u.Avatar,
-                        m.Apelido,
-                        m.Role,
-                        DataEntrada = m.DataCriacao
-                    })
-                .Select(x => ValueTuple.Create(x.MembroId, x.UsuarioId, x.NomeUsuario, x.Avatar, x.Apelido, x.Role, x.DataEntrada))
-                .ToListAsync(ct);
+        public async Task<IEnumerable<MembroResponse>> ObterMembrosComUsuariosAsync(
+     Guid grupoId, CancellationToken ct = default)
+     => await _context.Membros
+         .Where(m => m.FamiliaId == grupoId)
+         .Join(_context.Usuarios,
+             m => m.UsuarioId,
+             u => u.Id,
+             (m, u) => new MembroResponse(
+                 m.Id,
+                 m.UsuarioId,
+                 u.Nome,
+                 u.Avatar,
+                 m.Apelido,
+                 m.Role.ToString(),
+                 m.DataCriacao
+             ))
+         .ToListAsync(ct);
 
         public async Task<Grupo?> ObterGrupoPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default)
             => await _context.Grupos.Where(x => x.Membros.Any(x => x.UsuarioId == usuarioId)).FirstAsync();

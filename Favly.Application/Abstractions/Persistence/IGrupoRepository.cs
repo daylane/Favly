@@ -1,3 +1,4 @@
+using Favly.Application.Grupos.DTOs;
 using Favly.Domain.Common.Enums;
 using Favly.Domain.Entities;
 
@@ -23,7 +24,7 @@ namespace Favly.Application.Abstractions.Persistence
         Task<IEnumerable<Grupo>> ListarGruposDoUsuarioAsync(Guid usuarioId,
             CancellationToken ct = default);
 
-        Task<IEnumerable<(Guid MembroId, Guid UsuarioId, string NomeUsuario, string Avatar, string Apelido, PapelMembro Role, DateTime DataEntrada)>> ObterMembrosComUsuariosAsync(
+        Task<IEnumerable<MembroResponse>> ObterMembrosComUsuariosAsync(
             Guid grupoId, CancellationToken ct = default);
 
         Task AdicionarAsync(Grupo grupo,

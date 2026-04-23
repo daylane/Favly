@@ -17,9 +17,9 @@ namespace Favly.Application.Grupos.Queries.ListarMembros
             var membros = await grupoRepository.ObterMembrosComUsuariosAsync(query.GrupoId, ct);
 
             return membros.Select(m => new MembroResponse(
-                m.MembroId,
+                m.Id,
                 m.UsuarioId,
-                m.NomeUsuario,
+                m.Nome,
                 m.Avatar,
                 m.Apelido,
                 m.Role.ToString(),
