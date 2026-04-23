@@ -1,4 +1,5 @@
-﻿using Favly.Application.Auth.Commands.Login;
+﻿using Favly.Application.Abstractions.Persistence;
+using Favly.Application.Auth.Commands.Login;
 using Favly.Domain.Common.Exceptions;
 using Favly.Domain.Entities;
 using Favly.Domain.Interfaces;
@@ -14,6 +15,7 @@ namespace Favly.Tests.Unit.Application.Auth
     public class LoginHandlerTests
     {
         private readonly IUsuarioRepository _repository = Substitute.For<IUsuarioRepository>();
+        private readonly IGrupoRepository _repositoryGrupo = Substitute.For<IGrupoRepository>();
         private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
         private readonly ITokenService _tokenService = Substitute.For<ITokenService>();
 
@@ -25,6 +27,7 @@ namespace Favly.Tests.Unit.Application.Auth
             var command = UsuarioFaker.LoginCommandValido(usuario.Email.EnderecoEmail);
 
             _repository.ObterPorEmailAsync(command.Email, default).Returns(usuario);
+            _repositoryGrupo.ObterGrupoPorUsuarioIdAsync(usuario.Id, default).Returns((Grupo?)null); // sem grupos para simplificar
             _hasher.Verificar(command.Senha, usuario.Hash).Returns(true);
             _tokenService.GerarToken(usuario).Returns("token-jwt-gerado");
 
