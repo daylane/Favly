@@ -13,7 +13,21 @@ namespace Favly.Infrastructure.Repositories
             => await _context.Grupos.AddAsync(grupo, cancellationToken);
 
         public void AtualizarAsync(Grupo grupo)
-            => _context.Grupos.Update(grupo);
+        {
+            // _context.Grupos.Update(grupo) marcaria o novo Membro (Guid não-zero,
+            // mas ainda não persistido) como Modified em vez de Added, causando
+            // DbUpdateConcurrencyException (UPDATE em linha inexistente → 0 rows).
+            //
+            // Entidades carregadas via query já são rastreadas pelo change tracker —
+            // alterações em propriedades escalares são detectadas automaticamente.
+            // Só precisamos registrar explicitamente os Membros recém-criados que
+            // ainda estão Detached.
+            foreach (var membro in grupo.Membros)
+            {
+                if (_context.Entry(membro).State == EntityState.Detached)
+                    _context.Membros.Add(membro);
+            }
+        }
 
         public async Task<IEnumerable<(string Email, string Nome)>> ObterEmailsDoGrupoAsync(Guid grupoId, CancellationToken ct = default)
             => await _context.Membros
