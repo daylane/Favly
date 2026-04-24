@@ -32,7 +32,9 @@ namespace Favly.Application.Convites.Commands.AceitarConvite
             convite.Aceitar();
             grupo!.AdicionarMembro(command.UsuarioId, command.Apelido, PapelMembro.Usuario);
 
-            conviteRepository.Atualizar(convite);
+            // convite foi carregado via query → já rastreado; change tracker detecta
+            // a mudança de Status automaticamente. Não chamar Atualizar() para evitar
+            // que Update() marque EmailConvidado (OwnsOne) como Modified separadamente.
             grupoRepository.AtualizarAsync(grupo);
             await uow.CommitAsync(ct);
 

@@ -20,7 +20,21 @@ namespace Favly.Infrastructure.Repositories
             => await _context.Convites.AddAsync(convite, ct);
 
         public void Atualizar(Convite convite)
-            => _context.Convites.Update(convite);
+        {
+            // Update() percorre o grafo completo e marca a entidade proprietária
+            // EmailConvidado (OwnsOne, mesma tabela) como Modified separadamente,
+            // gerando um UPDATE que afeta 0 linhas → DbUpdateConcurrencyException.
+            //
+            // Entidades carregadas via query já são rastreadas pelo change tracker —
+            // alterações em propriedades escalares são detectadas automaticamente via
+            // snapshot comparison. Só forçamos Attach + Modified para entidades detached.
+            var entry = _context.Entry(convite);
+            if (entry.State == EntityState.Detached)
+            {
+                _context.Convites.Attach(convite);
+                entry.State = EntityState.Modified;
+            }
+        }
 
         public async Task<Convite?> ObterPorIdAsync(Guid id, CancellationToken ct = default)
             => await _context.Convites.FindAsync(id);
