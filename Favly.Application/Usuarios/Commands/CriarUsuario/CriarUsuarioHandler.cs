@@ -1,4 +1,6 @@
-﻿using Favly.Application.Usuarios.DTOs;
+﻿using Favly.Application.Abstractions.Persistence;
+using Favly.Application.Usuarios.DTOs;
+using Favly.Domain.Common.Enums;
 using Favly.Domain.Common.Exceptions;
 using Favly.Domain.Entities;
 using Favly.Domain.Interfaces;
@@ -13,7 +15,8 @@ namespace Favly.Application.Usuarios.Commands.CriarUsuario
         IUsuarioRepository repository,
         IPasswordHasher hasher,
         IUnitOfWork uow,
-        IMessageBus bus,         
+        IMessageBus bus,
+        IGrupoRepository _grupoRepository,
         CancellationToken ct)
         {
             DomainException.When(
@@ -24,6 +27,12 @@ namespace Favly.Application.Usuarios.Commands.CriarUsuario
             var usuario = Usuario.Criar(command.Email, command.Nome, hash, command.Avatar);
 
             await repository.AdicionarAsync(usuario, ct);
+
+            var grupoPessoal = new Grupo($"{command.Nome} - Pessoal");
+            grupoPessoal.AdicionarMembro(usuario.Id, "Eu", PapelMembro.Administrador);
+
+            await _grupoRepository.AdicionarAsync(grupoPessoal, ct);
+
             await uow.CommitAsync(ct);
 
             // Publica os domain events após salvar

@@ -4,5 +4,5 @@ using System.Text;
 
 namespace Favly.Domain.Common.Enums
 {
-    public enum StatusConvite { Pendente, Aceito, Recusado, Expirado }
+    public enum StatusConvite { Pendente, Aceito, Recusado, Expirado, Removido }
 }

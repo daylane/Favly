@@ -13,11 +13,17 @@ namespace Favly.Infrastructure.Data
     {
         public FavlyDbContext(DbContextOptions<FavlyDbContext> options) : base(options) { }
 
-        public DbSet<Tarefa> Tarefas { get; set; }
-        public DbSet<Pagamento> Pagamentos { get; set; }
-        public DbSet<Usuario> Usuarios { get; set; }
-        public DbSet<Convite> Convites { get; set; }
-        public DbSet<Membro> Membros { get; set; }
+        public DbSet<Usuario> Usuarios => Set<Usuario>();
+        public DbSet<Grupo> Grupos => Set<Grupo>();
+        public DbSet<Membro> Membros => Set<Membro>();
+        public DbSet<Convite> Convites => Set<Convite>(); // ← remova se removeu Convite
+        public DbSet<TokenResetSenha> TokensResetSenha => Set<TokenResetSenha>();
+
+
+        public DbSet<Categoria> Categorias => Set<Categoria>();
+        public DbSet<Mercado> Mercados => Set<Mercado>();
+        public DbSet<Produto> Produtos => Set<Produto>();
+        public DbSet<Movimentacao> Movimentacoes => Set<Movimentacao>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

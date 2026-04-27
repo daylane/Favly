@@ -21,7 +21,9 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="MailKit" Version="4.15.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.0" />
 	<PackageReference Include="WolverineFx" Version="5.16.4" />
 	<PackageReference Include="WolverineFx.EntityFrameworkCore" Version="5.16.4" />
   </ItemGroup>

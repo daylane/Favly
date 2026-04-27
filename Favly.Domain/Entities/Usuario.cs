@@ -91,6 +91,12 @@ namespace Favly.Domain.Entities
             AddDomainEvent(new CodigoAtivacaoReenviadoEvent(Id));
         }
 
+        public void RedefinirSenha(string novoHash)
+        {
+            Guard.AgainstNullOrWhiteSpace(novoHash, nameof(novoHash));
+            Hash = novoHash;
+            AtualizarDataAtualizacao();
+        }
 
         public bool ValidarSenha(string hash) => Hash == hash;
     }

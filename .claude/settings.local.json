@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node gerar-doc.js)",
+      "Bash(npm install *)",
+      "Bash(npm init *)",
+      "Bash(copy \"C:\\\\Users\\\\daylane\\\\AppData\\\\Local\\\\Packages\\\\Claude_pzs8sxrjxfjjc\\\\LocalCache\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\9132ce6b-6823-4bd2-99b5-04b8a446a71d\\\\f2bbd1f3-1540-40bd-90bc-501db676afb5\\\\skills\\\\docx\\\\Favly_Login_Grupos.docx\" \"C:\\\\Users\\\\daylane\\\\Documents\\\\GitHub\\\\Favly\\\\Favly_Login_Grupos.docx\")",
+      "Bash(curl -s -X POST http://localhost:5019/api/convites/D46951B029/entrar -H 'Content-Type: application/json' -d '{\"senha\":\"123456\",\"apelido\":\"day\"}')",
+      "Bash(python3 -m json.tool)"
+    ]
+  }
+}
