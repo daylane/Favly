@@ -16,14 +16,11 @@ namespace Favly.Application.Movimentacoes.Queries.ListarMovimentacoes
             var ehMembro = await grupoRepository.UsuarioEhMembroAsync(query.GrupoId, query.UsuarioId, ct);
             AcessoNegadoException.When(!ehMembro, "Você não é membro deste grupo.");
 
-            IEnumerable<Favly.Domain.Entities.Movimentacao> movimentacoes;
+            var movimentacoes = query.ProdutoId.HasValue
+                ? await movimentacaoRepository.ListarPorProdutoAsync(query.ProdutoId.Value, ct)
+                : await movimentacaoRepository.ListarPorGrupoAsync(query.GrupoId, query.Pagina, query.Tamanho, ct);
 
-            if (query.ProdutoId.HasValue)
-                movimentacoes = await movimentacaoRepository.ListarPorProdutoAsync(query.ProdutoId.Value, ct);
-            else
-                movimentacoes = await movimentacaoRepository.ListarPorGrupoAsync(query.GrupoId, query.Pagina, query.Tamanho, ct);
-
-            return movimentacoes.Select(MovimentacaoResponse.FromEntity);
+            return movimentacoes.Select(MovimentacaoResponse.FromDetalhada);
         }
     }
 }

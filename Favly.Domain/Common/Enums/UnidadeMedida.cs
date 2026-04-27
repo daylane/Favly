@@ -12,6 +12,8 @@ namespace Favly.Domain.Common.Enums
         Litro = 4,
         Mililitro = 5,
         Caixa = 6,
-        Pacote = 7
+        Pacote = 7,
+        Duzia = 8,
+        Cartela = 9,
     }
 }

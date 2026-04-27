@@ -16,7 +16,8 @@ namespace Favly.Application.Produtos.Queries.ListarProdutos
             var ehMembro = await grupoRepository.UsuarioEhMembroAsync(query.GrupoId, query.UsuarioId, ct);
             AcessoNegadoException.When(!ehMembro, "Você não é membro deste grupo.");
 
-            var produtos = await repository.ListarPorGrupoAsync(query.GrupoId, ct);
+            var filtros = new ProdutoFiltros(query.Nome, query.Marca, query.CategoriaId);
+            var produtos = await repository.ListarPorGrupoAsync(query.GrupoId, filtros, ct);
             return produtos.Select(ProdutoResponse.FromEntity);
         }
 

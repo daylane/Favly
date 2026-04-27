@@ -32,6 +32,11 @@ namespace Favly.Application.Abstractions.Persistence
 
         void AtualizarAsync(Grupo grupo);
 
+        void RemoverMembro(Membro membro);
+
+        Task<bool> UsuarioPossuiOutrosGruposAsync(Guid usuarioId, Guid grupoIdAtual,
+            CancellationToken ct = default);
+
         Task<IEnumerable<(string Email, string Nome)>> ObterEmailsDoGrupoAsync(Guid grupoId, CancellationToken ct = default);
     }
 }

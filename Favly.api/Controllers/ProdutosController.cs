@@ -21,10 +21,13 @@ namespace Favly.api.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ProdutoResponse>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Listar(Guid grupoId, CancellationToken ct)
+        public async Task<IActionResult> Listar(
+            Guid grupoId,
+            [FromQuery] ListarProdutosRequest filtros,
+            CancellationToken ct)
         {
             var result = await _bus.InvokeAsync<IEnumerable<ProdutoResponse>>(
-                new ListarProdutosQuery(grupoId, UsuarioId), ct);
+                new ListarProdutosQuery(grupoId, UsuarioId, filtros.Nome, filtros.Marca, filtros.CategoriaId), ct);
             return Ok(result);
         }
 

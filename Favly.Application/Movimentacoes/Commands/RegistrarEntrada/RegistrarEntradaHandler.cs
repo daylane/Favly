@@ -34,7 +34,8 @@ namespace Favly.Application.Movimentacoes.Commands.RegistrarEntrada
             await movimentacaoRepository.AdicionarAsync(movimentacao, ct);
             await uow.CommitAsync(ct);
 
-            return MovimentacaoResponse.FromEntity(movimentacao);
+            var detalhada = await movimentacaoRepository.ObterDetalhadaPorIdAsync(movimentacao.Id, ct);
+            return MovimentacaoResponse.FromDetalhada(detalhada!);
         }
     }
 }

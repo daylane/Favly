@@ -8,23 +8,79 @@ namespace Favly.Infrastructure.Repositories
 {
     public class MovimentacaoRepository(FavlyDbContext _context) : IMovimentacaoRepository
     {
-        public async Task<IEnumerable<Movimentacao>> ListarPorProdutoAsync(Guid produtoId, CancellationToken ct = default) =>
+        public async Task<IEnumerable<MovimentacaoDetalhada>> ListarPorProdutoAsync(Guid produtoId, CancellationToken ct = default) =>
             await _context.Movimentacoes
                 .Where(m => m.ProdutoId == produtoId)
                 .OrderByDescending(m => m.DataCriacao)
+                .Join(_context.Produtos,
+                    m => m.ProdutoId, p => p.Id,
+                    (m, p) => new { Mov = m, NomeProduto = p.Nome })
+                .Join(_context.Membros,
+                    x => new { UserId = x.Mov.MembroId, GrupoId = x.Mov.GrupoId },
+                    mb => new { UserId = mb.UsuarioId, GrupoId = mb.FamiliaId },
+                    (x, mb) => new { x.Mov, x.NomeProduto, NomeMembro = mb.Apelido })
+                .GroupJoin(_context.Mercados,
+                    x => x.Mov.MercadoId, mc => (Guid?)mc.Id,
+                    (x, mcs) => new { x, mcs })
+                .SelectMany(x => x.mcs.DefaultIfEmpty(), (x, mc) => new MovimentacaoDetalhada(
+                    x.x.Mov.Id,
+                    x.x.Mov.ProdutoId, x.x.NomeProduto,
+                    x.x.Mov.MembroId, x.x.NomeMembro,
+                    x.x.Mov.MercadoId, mc != null ? mc.Nome : null,
+                    x.x.Mov.Tipo, x.x.Mov.Quantidade, x.x.Mov.Preco,
+                    x.x.Mov.Observacao, x.x.Mov.DataCriacao))
                 .ToListAsync(ct);
 
-        public async Task<IEnumerable<Movimentacao>> ListarPorGrupoAsync(
+        public async Task<IEnumerable<MovimentacaoDetalhada>> ListarPorGrupoAsync(
             Guid grupoId, int pagina, int tamanhoPagina, CancellationToken ct = default) =>
             await _context.Movimentacoes
                 .Where(m => m.GrupoId == grupoId)
                 .OrderByDescending(m => m.DataCriacao)
                 .Skip((pagina - 1) * tamanhoPagina)
                 .Take(tamanhoPagina)
+                .Join(_context.Produtos,
+                    m => m.ProdutoId, p => p.Id,
+                    (m, p) => new { Mov = m, NomeProduto = p.Nome })
+                .Join(_context.Membros,
+                    x => new { UserId = x.Mov.MembroId, GrupoId = x.Mov.GrupoId },
+                    mb => new { UserId = mb.UsuarioId, GrupoId = mb.FamiliaId },
+                    (x, mb) => new { x.Mov, x.NomeProduto, NomeMembro = mb.Apelido })
+                .GroupJoin(_context.Mercados,
+                    x => x.Mov.MercadoId, mc => (Guid?)mc.Id,
+                    (x, mcs) => new { x, mcs })
+                .SelectMany(x => x.mcs.DefaultIfEmpty(), (x, mc) => new MovimentacaoDetalhada(
+                    x.x.Mov.Id,
+                    x.x.Mov.ProdutoId, x.x.NomeProduto,
+                    x.x.Mov.MembroId, x.x.NomeMembro,
+                    x.x.Mov.MercadoId, mc != null ? mc.Nome : null,
+                    x.x.Mov.Tipo, x.x.Mov.Quantidade, x.x.Mov.Preco,
+                    x.x.Mov.Observacao, x.x.Mov.DataCriacao))
                 .ToListAsync(ct);
 
         public async Task AdicionarAsync(Movimentacao movimentacao, CancellationToken ct = default) =>
             await _context.Movimentacoes.AddAsync(movimentacao, ct);
+
+        public async Task<MovimentacaoDetalhada?> ObterDetalhadaPorIdAsync(Guid id, CancellationToken ct = default) =>
+            await _context.Movimentacoes
+                .Where(m => m.Id == id)
+                .Join(_context.Produtos,
+                    m => m.ProdutoId, p => p.Id,
+                    (m, p) => new { Mov = m, NomeProduto = p.Nome })
+                .Join(_context.Membros,
+                    x => new { UserId = x.Mov.MembroId, GrupoId = x.Mov.GrupoId },
+                    mb => new { UserId = mb.UsuarioId, GrupoId = mb.FamiliaId },
+                    (x, mb) => new { x.Mov, x.NomeProduto, NomeMembro = mb.Apelido })
+                .GroupJoin(_context.Mercados,
+                    x => x.Mov.MercadoId, mc => (Guid?)mc.Id,
+                    (x, mcs) => new { x, mcs })
+                .SelectMany(x => x.mcs.DefaultIfEmpty(), (x, mc) => new MovimentacaoDetalhada(
+                    x.x.Mov.Id,
+                    x.x.Mov.ProdutoId, x.x.NomeProduto,
+                    x.x.Mov.MembroId, x.x.NomeMembro,
+                    x.x.Mov.MercadoId, mc != null ? mc.Nome : null,
+                    x.x.Mov.Tipo, x.x.Mov.Quantidade, x.x.Mov.Preco,
+                    x.x.Mov.Observacao, x.x.Mov.DataCriacao))
+                .FirstOrDefaultAsync(ct);
 
         public async Task<(decimal? Media, int TotalCompras)> ObterEstatisticasPrecoAsync(Guid produtoId, CancellationToken ct = default)
         {

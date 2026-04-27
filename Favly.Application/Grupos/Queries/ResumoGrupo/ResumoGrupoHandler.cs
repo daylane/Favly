@@ -17,7 +17,7 @@ namespace Favly.Application.Grupos.Queries.ResumoGrupo
             var ehMembro = await grupoRepository.UsuarioEhMembroAsync(query.GrupoId, query.UsuarioId, ct);
             AcessoNegadoException.When(!ehMembro, "Você não é membro deste grupo.");
 
-            var produtos = await produtoRepository.ListarPorGrupoAsync(query.GrupoId, ct);
+            var produtos = await produtoRepository.ListarPorGrupoAsync(query.GrupoId, ct: ct);
             var estoqueBaixo = await produtoRepository.ListarEstoqueBaixoAsync(query.GrupoId, ct);
             var ultimaEntrada = await movimentacaoRepository.ObterUltimaEntradaAsync(query.GrupoId, ct);
 

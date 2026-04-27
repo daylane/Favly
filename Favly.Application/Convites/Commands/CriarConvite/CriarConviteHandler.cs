@@ -24,6 +24,12 @@ namespace Favly.Application.Convites.Commands.CriarConvite
             NotFoundException.When(grupo is null, "Grupo não encontrado.");
 
             var emailConvidado = EmailUsuario.Criar(command.EmailConvidado);
+
+            var pendente = await conviteRepository.ObterPendentePorEmailEGrupoAsync(
+                command.GrupoId, emailConvidado.EnderecoEmail, ct);
+            DomainException.When(pendente is not null,
+                "Já existe um convite pendente para este e-mail. Reenvie o convite existente ou aguarde sua expiração.");
+
             var convite = new Convite(command.GrupoId, emailConvidado);
 
             await conviteRepository.AdicionarAsync(convite, ct);

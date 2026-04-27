@@ -39,7 +39,8 @@ namespace Favly.Application.Movimentacoes.Commands.RegistrarSaida
 
             produto.ClearDomainEvents();
 
-            return MovimentacaoResponse.FromEntity(movimentacao);
+            var detalhada = await movimentacaoRepository.ObterDetalhadaPorIdAsync(movimentacao.Id, ct);
+            return MovimentacaoResponse.FromDetalhada(detalhada!);
         }
     }
 }

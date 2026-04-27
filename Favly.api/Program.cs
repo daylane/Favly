@@ -14,7 +14,12 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' não encontrada.");
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(opts =>
+    {
+        opts.JsonSerializerOptions.Converters.Add(new Favly.api.Extensions.DecimalJsonConverter());
+        opts.JsonSerializerOptions.Converters.Add(new Favly.api.Extensions.NullableDecimalJsonConverter());
+    });
 
 builder.Services.AddCors(options =>
 {

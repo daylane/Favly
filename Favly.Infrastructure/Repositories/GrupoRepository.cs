@@ -14,20 +14,36 @@ namespace Favly.Infrastructure.Repositories
 
         public void AtualizarAsync(Grupo grupo)
         {
-            // _context.Grupos.Update(grupo) marcaria o novo Membro (Guid não-zero,
-            // mas ainda não persistido) como Modified em vez de Added, causando
-            // DbUpdateConcurrencyException (UPDATE em linha inexistente → 0 rows).
+            // PROBLEMA: o EF Core usa ValueGeneratedOnAdd para Guid. Quando o novo
+            // Membro tem Id = Guid.NewGuid() (≠ Guid.Empty), o EF assume "entidade
+            // existente" e gera UPDATE → 0 rows → DbUpdateConcurrencyException.
             //
-            // Entidades carregadas via query já são rastreadas pelo change tracker —
-            // alterações em propriedades escalares são detectadas automaticamente.
-            // Só precisamos registrar explicitamente os Membros recém-criados que
-            // ainda estão Detached.
-            foreach (var membro in grupo.Membros)
+            // SOLUÇÃO: desabilitar AutoDetectChanges antes de iterar para impedir
+            // que o ChangeTracker faça um scan de navegação e trackei o novo Membro
+            // como Unchanged. Em seguida, forçar State = Added explicitamente,
+            // o que sobrepõe qualquer estado anterior e garante INSERT.
+            var autoDetect = _context.ChangeTracker.AutoDetectChangesEnabled;
+            _context.ChangeTracker.AutoDetectChangesEnabled = false;
+            try
             {
-                if (_context.Entry(membro).State == EntityState.Detached)
-                    _context.Membros.Add(membro);
+                foreach (var membro in grupo.Membros)
+                {
+                    if (_context.Membros.Local.All(m => m.Id != membro.Id))
+                        _context.Entry(membro).State = EntityState.Added;
+                }
+            }
+            finally
+            {
+                _context.ChangeTracker.AutoDetectChangesEnabled = autoDetect;
             }
         }
+
+        public void RemoverMembro(Membro membro)
+            => _context.Membros.Remove(membro);
+
+        public Task<bool> UsuarioPossuiOutrosGruposAsync(Guid usuarioId, Guid grupoIdAtual, CancellationToken ct = default)
+            => _context.Membros.AnyAsync(
+                m => m.UsuarioId == usuarioId && m.FamiliaId != grupoIdAtual, ct);
 
         public async Task<IEnumerable<(string Email, string Nome)>> ObterEmailsDoGrupoAsync(Guid grupoId, CancellationToken ct = default)
             => await _context.Membros

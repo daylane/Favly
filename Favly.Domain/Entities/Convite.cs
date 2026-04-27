@@ -57,6 +57,17 @@ namespace Favly.Domain.Entities
             DataAtualizacao = DateTime.UtcNow;
         }
 
+        public void Reenviar()
+        {
+            Guard.Against<DomainException>(
+                Status != StatusConvite.Pendente,
+                "Apenas convites pendentes podem ser reenviados.");
+
+            Codigo = Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper();
+            DataExpiracao = DateTime.UtcNow.AddDays(7);
+            DataAtualizacao = DateTime.UtcNow;
+        }
+
         public void Expirar()
         {
             if (Status == StatusConvite.Pendente && DateTime.UtcNow > DataExpiracao)

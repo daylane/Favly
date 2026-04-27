@@ -16,6 +16,12 @@ namespace Favly.Infrastructure.Repositories
                 .OrderByDescending(c => c.DataCriacao)
                 .ToListAsync(ct);
 
+        public Task<Convite?> ObterPendentePorEmailEGrupoAsync(Guid grupoId, string email, CancellationToken ct = default)
+            => _context.Convites.FirstOrDefaultAsync(c =>
+                c.FamiliaId == grupoId &&
+                c.EmailConvidado.EnderecoEmail == email.ToLower() &&
+                c.Status == Domain.Common.Enums.StatusConvite.Pendente, ct);
+
         public async Task AdicionarAsync(Convite convite, CancellationToken ct = default)
             => await _context.Convites.AddAsync(convite, ct);
 

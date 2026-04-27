@@ -1,15 +1,17 @@
 using Favly.Application.Abstractions.Persistence;
+using Favly.Application.Convites.DTOs;
 using Favly.Domain.Common.Exceptions;
 using Favly.Domain.Interfaces;
 
-namespace Favly.Application.Convites.Commands.RemoverConvite
+namespace Favly.Application.Convites.Commands.ReenviarConvite
 {
-    public class RemoverConviteHandler
+    public class ReenviarConviteHandler
     {
-        public static async Task Handle(
-            RemoverConviteCommand command,
+        public static async Task<ConviteResponse> Handle(
+            ReenviarConviteCommand command,
             IConviteRepository conviteRepository,
             IGrupoRepository grupoRepository,
+            IEmailService emailService,
             IUnitOfWork uow,
             CancellationToken ct)
         {
@@ -20,10 +22,20 @@ namespace Favly.Application.Convites.Commands.RemoverConvite
             NotFoundException.When(convite is null, "Convite não encontrado.");
             DomainException.When(convite!.FamiliaId != command.GrupoId, "Este convite não pertence a este grupo.");
 
-            convite.Remover();
+            // Gera novo código e estende a expiração por mais 7 dias
+            convite.Reenviar();
 
-            conviteRepository.Atualizar(convite);
             await uow.CommitAsync(ct);
+
+            var grupo = await grupoRepository.ObterPorIdAsync(command.GrupoId, ct);
+
+            await emailService.EnviarConviteAsync(
+                email: convite.EmailConvidado.EnderecoEmail,
+                grupoNome: grupo!.Nome,
+                codigo: convite.Codigo,
+                ct: ct);
+
+            return ConviteResponse.FromEntity(convite);
         }
     }
 }

@@ -4,5 +4,5 @@ using System.Text;
 
 namespace Favly.Application.Convites.Commands.RemoverConvite
 {
-    public record RemoverConviteCommand(Guid GrupoId, Guid Id);
+    public record RemoverConviteCommand(Guid GrupoId, Guid UsuarioId, Guid ConviteId);
 }
