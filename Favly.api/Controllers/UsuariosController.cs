@@ -19,9 +19,10 @@ namespace Favly.api.Controllers
         [ProducesResponseType(typeof(UsuarioResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> Criar([FromBody] CriarUsuarioCommand command, CancellationToken ct)
+        public async Task<IActionResult> Criar([FromBody] CriarUsuarioRequest request, CancellationToken ct)
         {
-            var result = await _bus.InvokeAsync<UsuarioResponse>(command, ct);
+            var result = await _bus.InvokeAsync<UsuarioResponse>(
+                new CriarUsuarioCommand(request.Nome, request.Email, request.Senha, request.Avatar), ct);
             return CreatedAtAction(nameof(ObterPorId), new { id = result.Id }, result);
         }
 
