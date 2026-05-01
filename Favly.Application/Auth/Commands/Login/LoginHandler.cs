@@ -34,6 +34,7 @@ namespace Favly.Application.Auth.Commands.Login
                 Token: token,
                 Nome: usuario.Nome,
                 Email: usuario.Email.EnderecoEmail,
+                Avatar: usuario.Avatar,
                 GrupoId: grupo.Id,
                 GrupoNome: grupo.Nome,
                 Expiracao: DateTime.UtcNow.AddDays(1));
