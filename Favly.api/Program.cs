@@ -11,6 +11,10 @@ using Wolverine.Postgresql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Permite avatares em base64 (imagens podem ser grandes)
+builder.WebHost.ConfigureKestrel(options =>
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024); // 10 MB
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' não encontrada.");
 
@@ -85,6 +89,8 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+app.UseStaticFiles(); // serve /uploads/avatars/*
 
 app.UseMiddleware<ExceptionMiddleware>();
 

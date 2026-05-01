@@ -27,6 +27,9 @@ namespace Favly.Infrastructure.Data.Configurations
             });
 
             builder.Property(u => u.Nome).IsRequired().HasMaxLength(100);
+
+            // base64 pode ser grande — sem limite de tamanho
+            builder.Property(u => u.Avatar).HasColumnType("text").IsRequired(false);
         }
     }
 }
