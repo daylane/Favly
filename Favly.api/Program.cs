@@ -27,15 +27,17 @@ builder.Services.AddControllers()
 
 builder.Services.AddCors(options =>
 {
-    // AllowAnyOrigin() é incompatível com AllowCredentials() — precisamos de origem explícita
-    var frontendUrl = builder.Configuration["App:FrontendUrl"] ?? "http://localhost:3000";
+    // Lê origens permitidas da config — suporta múltiplas separadas por vírgula
+    // Ex: "http://localhost:3000,http://localhost:5173,https://favly.app"
+    var origensConfig = builder.Configuration["App:FrontendUrl"] ?? "http://localhost:3000";
+    var origens = origensConfig.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-    options.AddPolicy("Development", policy =>
+    options.AddPolicy("Default", policy =>
     {
-        policy.WithOrigins(frontendUrl)
+        policy.WithOrigins(origens)
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowCredentials(); // necessário para o browser enviar/receber cookies
+              .AllowCredentials(); // necessário para cookies HttpOnly
     });
 });
 
@@ -77,6 +79,8 @@ if (!app.Environment.IsEnvironment("Testing"))
     db.Database.Migrate();
 }
 
+app.UseCors("Default"); // deve vir antes de UseAuthentication e UseAuthorization
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -86,7 +90,6 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Favly v1");
         options.RoutePrefix = string.Empty;
     });
-    app.UseCors("Development");
 }
 
 if (!app.Environment.IsDevelopment())
