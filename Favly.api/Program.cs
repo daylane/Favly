@@ -27,11 +27,15 @@ builder.Services.AddControllers()
 
 builder.Services.AddCors(options =>
 {
+    // AllowAnyOrigin() é incompatível com AllowCredentials() — precisamos de origem explícita
+    var frontendUrl = builder.Configuration["App:FrontendUrl"] ?? "http://localhost:3000";
+
     options.AddPolicy("Development", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(frontendUrl)
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials(); // necessário para o browser enviar/receber cookies
     });
 });
 

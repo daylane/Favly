@@ -49,6 +49,17 @@ namespace Favly.api.Extensions
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
+
+                // Lê o token do cookie HttpOnly em vez do header Authorization
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = ctx =>
+                    {
+                        if (ctx.Request.Cookies.TryGetValue("favly_token", out var token))
+                            ctx.Token = token;
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             services.AddAuthorization();
