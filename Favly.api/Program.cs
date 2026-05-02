@@ -29,7 +29,7 @@ builder.Services.AddCors(options =>
 {
     // Lê origens permitidas da config — suporta múltiplas separadas por vírgula
     // Ex: "http://localhost:3000,http://localhost:5173,https://favly.app"
-    var origensConfig = builder.Configuration["App:FrontendUrl"] ?? "http://localhost:3000";
+    var origensConfig = builder.Configuration["App:CorsOrigins"] ?? builder.Configuration["App:FrontendUrl"] ?? "http://localhost:4200";
     var origens = origensConfig.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
     options.AddPolicy("Default", policy =>
