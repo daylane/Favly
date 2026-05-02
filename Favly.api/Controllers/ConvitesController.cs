@@ -18,9 +18,18 @@ namespace Favly.api.Controllers
 {
     [ApiController]
     [Authorize]
-    public class ConvitesController(IMessageBus _bus) : ControllerBase
+    public class ConvitesController(IMessageBus _bus, IConfiguration _config) : ControllerBase
     {
+        private const string CookieName = "favly_token";
         private Guid UsuarioId => Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+
+        private CookieOptions CookieOpts(DateTime expiracao) => new()
+        {
+            HttpOnly = true,
+            Secure = _config["ASPNETCORE_ENVIRONMENT"] != "Development",
+            SameSite = SameSiteMode.Strict,
+            Expires = expiracao
+        };
 
         // ── Gerenciamento de convites (membros do grupo) ──────────────────────
 
@@ -131,7 +140,10 @@ namespace Favly.api.Controllers
             var result = await _bus.InvokeAsync<RegistrarEAceitarResponse>(
                 new EntrarPorConviteCommand(
                     codigo, request.Senha, request.Nome, request.Apelido, request.Avatar), ct);
-            return Ok(result);
+
+            Response.Cookies.Append(CookieName, result.Token, CookieOpts(result.Expiracao));
+
+            return Ok(result with { Token = string.Empty });
         }
 
         /// <summary>
