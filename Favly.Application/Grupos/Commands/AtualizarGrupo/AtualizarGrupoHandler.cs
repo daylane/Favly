@@ -28,7 +28,7 @@ namespace Favly.Application.Grupos.Commands.AtualizarGrupo
             grupoRepository.AtualizarAsync(grupo!);
             await uow.CommitAsync(ct);
 
-            return GrupoResponse.FromEntity(grupo!);
+            return GrupoResponse.FromEntity(grupo!, command.UsuarioId);
         }
     }
 }

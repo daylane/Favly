@@ -39,7 +39,7 @@ namespace Favly.Application.Convites.Commands.AceitarConvite
             grupoRepository.AtualizarAsync(grupo);
             await uow.CommitAsync(ct);
 
-            return GrupoResponse.FromEntity(grupo);
+            return GrupoResponse.FromEntity(grupo, command.UsuarioId);
         }
     }
 }

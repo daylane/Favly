@@ -1,3 +1,4 @@
+using Favly.Domain.Common.Enums;
 using Favly.Domain.Entities;
 
 namespace Favly.Application.Grupos.DTOs
@@ -7,13 +8,15 @@ namespace Favly.Application.Grupos.DTOs
         string Nome,
         string Avatar,
         string CodigoConvite,
-        int TotalMembros)
+        int TotalMembros,
+        PapelMembro? MinhaRole)
     {
-        public static GrupoResponse FromEntity(Grupo g) => new(
+        public static GrupoResponse FromEntity(Grupo g, Guid usuarioId) => new(
             g.Id,
             g.Nome,
             g.Avatar,
             g.Convite,
-            g.Membros.Count);
+            g.Membros.Count,
+            g.Membros.FirstOrDefault(m => m.UsuarioId == usuarioId)?.Role);
     }
 }

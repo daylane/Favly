@@ -17,7 +17,7 @@ namespace Favly.Application.Grupos.Queries.ObterGrupo
             var grupo = await grupoRepository.ObterPorIdComMembrosAsync(query.GrupoId, ct);
             NotFoundException.When(grupo is null, "Grupo não encontrado.");
 
-            return GrupoResponse.FromEntity(grupo!);
+            return GrupoResponse.FromEntity(grupo!, query.UsuarioId);
         }
     }
 }

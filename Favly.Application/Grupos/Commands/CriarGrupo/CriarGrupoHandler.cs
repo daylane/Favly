@@ -22,7 +22,7 @@ namespace Favly.Application.Grupos.Commands.CriarGrupo
             await grupoRepository.AdicionarAsync(grupo, ct);
             await uow.CommitAsync(ct);
 
-            return GrupoResponse.FromEntity(grupo);
+            return GrupoResponse.FromEntity(grupo, command.UsuarioId);
         }
     }
 }

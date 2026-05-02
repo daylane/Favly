@@ -11,7 +11,7 @@ namespace Favly.Application.Grupos.Queries.ListarGrupos
             CancellationToken ct)
         {
             var grupos = await grupoRepository.ListarGruposDoUsuarioAsync(query.UsuarioId, ct);
-            return grupos.Select(GrupoResponse.FromEntity);
+            return grupos.Select(g => GrupoResponse.FromEntity(g, query.UsuarioId));
         }
     }
 }
