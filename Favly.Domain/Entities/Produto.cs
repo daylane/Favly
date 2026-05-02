@@ -73,6 +73,9 @@ namespace Favly.Domain.Entities
         public void AdicionarEstoque(decimal quantidade, decimal? preco, Guid? mercadoId)
         {
             DomainException.When(quantidade <= 0, "Quantidade deve ser maior que zero.");
+            DomainException.When(
+                !Unidade.PermiteDecimal() && quantidade % 1 != 0,
+                $"O produto '{Nome}' usa a unidade '{Unidade.Sigla()}' que não aceita quantidade decimal. Informe um número inteiro.");
 
             QuantidadeAtual += quantidade;
 
@@ -89,6 +92,9 @@ namespace Favly.Domain.Entities
         public void RemoverEstoque(decimal quantidade)
         {
             DomainException.When(quantidade <= 0, "Quantidade deve ser maior que zero.");
+            DomainException.When(
+                !Unidade.PermiteDecimal() && quantidade % 1 != 0,
+                $"O produto '{Nome}' usa a unidade '{Unidade.Sigla()}' que não aceita quantidade decimal. Informe um número inteiro.");
             DomainException.When(quantidade > QuantidadeAtual, "Quantidade insuficiente em estoque.");
 
             QuantidadeAtual -= quantidade;

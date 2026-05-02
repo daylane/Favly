@@ -24,7 +24,7 @@ namespace Favly.Application.Grupos.Queries.ResumoGrupo
             return new ResumoGrupoResponse(
                 produtos.Count(),
                 estoqueBaixo.Count(),
-                ultimaEntrada?.Preco,
+                ultimaEntrada?.PrecoUnitario,
                 ultimaEntrada?.DataCriacao);
         }
     }

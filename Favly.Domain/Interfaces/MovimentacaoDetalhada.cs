@@ -6,13 +6,15 @@ namespace Favly.Domain.Interfaces
         Guid Id,
         Guid ProdutoId,
         string NomeProduto,
+        string UnidadeSigla,
         Guid MembroId,
         string NomeMembro,
         Guid? MercadoId,
         string? NomeMercado,
         TipoMovimentacao Tipo,
         decimal Quantidade,
-        decimal? Preco,
+        decimal? PrecoUnitario,
+        decimal? ValorTotal,
         string? Observacao,
         DateTime DataCriacao);
 }

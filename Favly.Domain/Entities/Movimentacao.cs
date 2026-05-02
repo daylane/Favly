@@ -13,7 +13,8 @@ namespace Favly.Domain.Entities
         public Guid? MercadoId { get; private set; }       // só em entradas
         public TipoMovimentacao Tipo { get; private set; }
         public decimal Quantidade { get; private set; }
-        public decimal? Preco { get; private set; }        // preço pago (só em entradas)
+        public decimal? PrecoUnitario { get; private set; }
+        public decimal? ValorTotal { get; private set; }   // Quantidade × PrecoUnitario — persistido no momento do registro
         public string? Observacao { get; private set; }
 
         protected Movimentacao() { }
@@ -25,7 +26,7 @@ namespace Favly.Domain.Entities
             Guid? mercadoId,
             TipoMovimentacao tipo,
             decimal quantidade,
-            decimal? preco,
+            decimal? precoUnitario,
             string? observacao)
         {
             GrupoId = grupoId;
@@ -34,7 +35,8 @@ namespace Favly.Domain.Entities
             MercadoId = mercadoId;
             Tipo = tipo;
             Quantidade = quantidade;
-            Preco = preco;
+            PrecoUnitario = precoUnitario;
+            ValorTotal = precoUnitario.HasValue ? quantidade * precoUnitario.Value : null;
             Observacao = observacao;
         }
 

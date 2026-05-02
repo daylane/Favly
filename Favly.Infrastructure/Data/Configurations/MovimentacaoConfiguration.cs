@@ -15,7 +15,8 @@ namespace Favly.Infrastructure.Data.Configurations
             builder.HasKey(m => m.Id);
             builder.Property(m => m.Tipo).HasConversion<int>().IsRequired();
             builder.Property(m => m.Quantidade).HasPrecision(18, 3).IsRequired();
-            builder.Property(m => m.Preco).HasPrecision(18, 2);
+            builder.Property(m => m.PrecoUnitario).HasPrecision(18, 4);
+            builder.Property(m => m.ValorTotal).HasPrecision(18, 2);
             builder.Property(m => m.Observacao).HasMaxLength(500);
             builder.Property(m => m.MercadoId).IsRequired(false);
         }
